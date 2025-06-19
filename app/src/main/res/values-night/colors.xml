@@ -1,0 +1,10 @@
+<resources>
+    <color name="colorPrimary">#00E384</color> <!-- Green "Start Test" -->
+    <color name="colorPrimaryDark">#0F1C17</color> <!-- Overall dark background -->
+    <color name="colorAccent">#1C332D</color> <!-- Input field bg -->
+    <color name="colorOnPrimary">#FFFFFF</color> <!-- Text on buttons -->
+    <color name="colorSecondary">#4E4E4E</color> <!-- Stop button -->
+    <color name="colorTextPrimary">#FFFFFF</color>
+    <color name="colorTextSecondary">#7A8A87</color> <!-- Hint text -->
+    <color name="colorBorder">#2F4B44</color>
+</resources>

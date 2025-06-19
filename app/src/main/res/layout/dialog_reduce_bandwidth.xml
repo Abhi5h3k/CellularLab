@@ -1,0 +1,33 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+
+    <TextView
+        android:id="@+id/reduceBandwidthMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="High packet loss detected. Reduce bandwidth?"
+        android:textSize="16sp"
+        android:textColor="@android:color/black" />
+
+    <TextView
+        android:id="@+id/reduceCountdownText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="Auto-confirming YES in 5 seconds..."
+        android:textColor="@android:color/holo_red_dark"
+        android:textSize="14sp" />
+
+    <ProgressBar
+        android:id="@+id/reduceProgressBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:max="5"
+        android:progress="5"
+        style="?android:attr/progressBarStyleHorizontal" />
+</LinearLayout>

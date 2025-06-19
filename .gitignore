@@ -1,0 +1,34 @@
+# Built application files
+*.apk
+*.ap_
+*.aab
+
+# Gradle files
+.gradle/
+build/
+*/build/
+
+# Local configuration files
+local.properties
+*.iml
+
+# Android Studio
+.idea/
+*.iws
+*.ipr
+
+# IntelliJ
+/out/
+
+# CMake
+.cxx/
+.externalNativeBuild/
+
+# Misc
+.DS_Store
+/captures/
+/captures/
+/.kotlin/
+
+*.jks
+keystore.properties

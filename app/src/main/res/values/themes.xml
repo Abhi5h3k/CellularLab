@@ -1,0 +1,49 @@
+<resources>
+    <style name="Theme.CellularLab" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Primary branding colors -->
+        <item name="colorPrimary">@color/colorPrimary</item> <!-- Green Start Test -->
+        <item name="colorPrimaryVariant">@color/colorPrimaryDark</item>
+        <item name="colorOnPrimary">@color/colorOnPrimary</item>
+
+        <!-- Secondary brand colors -->
+        <item name="colorSecondary">@color/colorSecondary</item> <!-- Stop Test -->
+        <item name="colorSecondaryVariant">@color/colorSecondary</item>
+        <item name="colorOnSecondary">@color/colorOnPrimary</item>
+
+        <!-- Background and surface -->
+        <item name="android:colorBackground">@color/colorPrimaryDark</item>
+        <item name="colorSurface">@color/colorAccent</item>
+        <item name="colorOnBackground">@color/colorTextPrimary</item>
+        <item name="colorOnSurface">@color/colorTextPrimary</item>
+
+        <!-- Status bar -->
+        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <item name="android:navigationBarColor">@color/colorPrimaryDark</item>
+        <item name="android:windowLightStatusBar">false</item>
+
+        <!-- Text input styles -->
+        <item name="editTextStyle">@style/Widget.App.EditText</item>
+        <item name="android:editTextBackground">@drawable/edittext_bg</item>
+
+        <!-- App bar and icons -->
+        <item name="actionBarStyle">@style/Widget.App.ActionBar</item>
+    </style>
+
+    <!-- Optional: Style for EditText to remove underline -->
+    <style name="Widget.App.EditText" parent="Widget.MaterialComponents.TextInputEditText.OutlinedBox">
+        <item name="android:textColor">@color/colorTextPrimary</item>
+        <item name="android:textColorHint">@color/colorTextSecondary</item>
+        <item name="boxBackgroundColor">@color/colorAccent</item>
+        <item name="boxStrokeColor">@color/colorBorder</item>
+        <item name="boxCornerRadiusTopStart">12dp</item>
+        <item name="boxCornerRadiusTopEnd">12dp</item>
+        <item name="boxCornerRadiusBottomStart">12dp</item>
+        <item name="boxCornerRadiusBottomEnd">12dp</item>
+    </style>
+
+    <!-- Optional: Action bar style -->
+    <style name="Widget.App.ActionBar" parent="Widget.MaterialComponents.Toolbar.Primary">
+        <item name="android:background">@color/colorPrimaryDark</item>
+        <item name="titleTextColor">@color/colorOnPrimary</item>
+    </style>
+</resources>

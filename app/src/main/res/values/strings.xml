@@ -1,0 +1,51 @@
+<resources>
+    <string name="app_name">CellularLab</string>
+    <string-array name="protocol_options">
+        <item>TCP</item>
+        <item>UDP</item>
+        <item>UDP Incremental Ramp-Up Test</item>
+        <item>TCP + UDP Hybrid Strategy</item>
+        <item>Smart Ramp-Up Strategy</item>
+    </string-array>
+    <string-array name="test_direction_options">
+        <item>Upload</item>
+        <item>Download (-R)</item>
+        <item>Bidirectional (--bidir)</item>
+
+    </string-array>
+    <string name="info_ip">Enter the server\'s IP address or hostname (e.g., 192.168.1.1).</string>
+    <string name="info_port">Enter the port number used for communication. Default is 5201.</string>
+    <string name="info_protocol">
+    Choose the protocol to use for the test:\n\n
+    • TCP — Reliable protocol for throughput measurement with acknowledgments and congestion control. Ideal for stable links.\n\n
+    • UDP — Lightweight protocol for speed testing without acknowledgments. Simulates real-time traffic like video or voice. Requires manual bandwidth setting.\n\n
+    • UDP Incremental Ramp-Up Test — 📈 Gradually increases UDP bandwidth by 50 Mbps per iteration until the defined target is reached. Helps evaluate how performance scales under increasing load.\n\n
+    • TCP + UDP Hybrid Strategy — 🔄 Runs an initial TCP test to estimate maximum bandwidth, then uses that result to configure UDP bandwidth automatically. Combines accuracy with high-speed testing.\n\n
+    • Smart Ramp-Up Strategy — 🤖 Dynamically adjusts UDP bandwidth based on actual performance in previous iterations. Increases bandwidth only if at least 90% of the current step was achieved, ensuring adaptive scaling.\n\n
+    ✅ Recommended: Use Hybrid or Smart Ramp-Up for optimized and automated test planning.
+    </string>
+
+
+    <string name="info_duration">Duration in seconds for how long the test should run.\n\nExample: 60</string>
+    <string name="info_bandwidth">Set the bandwidth (in Mbps) for UDP tests.\n\nExample: 100</string>
+    <string name="info_parallel_streams">Number of parallel streams used during the test.\n\nExample: 1</string>
+    <string name="info_interval">Time interval in seconds for each report during the test.\n\nExample: 1</string>
+    <string name="info_test_direction">
+    Choose the direction of the test:\n\n
+    • Upload — 📤 Sends data from your device to the server. Useful for testing outbound bandwidth and upstream performance.\n\n
+    • Download (-R) — 📥 Server sends data to your device. Tests inbound bandwidth and download performance. Uses the `-R` (reverse) flag.\n\n
+    • Bidirectional (--bidir) — 🔁 Performs both upload and download tests simultaneously. Gives a complete view of network performance. Uses the `--bidir` option.\n\n
+    💡 Tip: Use Bidirectional to quickly assess both upload and download throughput in one go.
+    </string>
+
+    <string name="info_iterations">Number of times to repeat the test.\n\nExample: 3</string>
+    <string name="info_wait_time">Wait time in seconds between repeated test iterations.\n\nExample: 15</string>
+    <string name="info_options">
+    • 🐛 Debug — Enables technical logs for troubleshooting.\n\n
+    • 📋 Verbose — Enables detailed per-second output from iPerf.\n\n
+    • 📉 Auto Reduce Bandwidth on Packet Loss —\n\nDuring UDP tests, this option monitors for high packet loss.\n\nIf a threshold is reached, a dialog will appear suggesting to reduce bandwidth.\n\nBy default, it will auto-accept after 5 seconds to help improve stability.
+    </string>
+
+    <string name="info_default">No information available.</string>
+
+</resources>
