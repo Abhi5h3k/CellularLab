@@ -5,7 +5,7 @@
     <color name="colorOnPrimary">#FFFFFF</color> <!-- Text on buttons -->
     <color name="colorOnPrimaryBtn">#111714</color>
     <color name="colorSecondary">#4E4E4E</color> <!-- Stop button -->
-    <color name="colorTextPrimary">#FFFFFF</color>
+    <color name="colorTextPrimary">#EDFFEC</color>
     <color name="colorTextSecondary">#7A8A87</color> <!-- Hint text -->
     <color name="colorBorder">#2F4B44</color>
 </resources>

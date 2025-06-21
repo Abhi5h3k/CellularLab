@@ -1,9 +1,13 @@
 package com.abhishek.cellularlab
 
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
+import android.graphics.Typeface
+import android.net.Uri
 import android.os.Bundle
 import android.view.GestureDetector
+import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
@@ -12,6 +16,7 @@ import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.Spinner
@@ -21,6 +26,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.abhishek.cellularlab.tests.iperf.IperfCallback
 import com.abhishek.cellularlab.tests.iperf.IperfTestManage
+import com.getkeepsafe.taptargetview.TapTarget
+import com.getkeepsafe.taptargetview.TapTargetSequence
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -95,6 +102,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var autoReduceCheckbox: CheckBox
 
     private lateinit var versionTextView: TextView
+
     // endregion
 
     // region State & Managers
@@ -114,12 +122,14 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-
-        versionTextView = findViewById(R.id.appVersionText)
-        versionTextView.text = "v${packageManager.getPackageInfo(packageName, 0).versionName}"
 
         bindViews()
+
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+
+        versionTextView.text = "v${packageManager.getPackageInfo(packageName, 0).versionName}"
+
+
         setupSpinners()
         setupGestureScrollToggle()
 
@@ -131,10 +141,21 @@ class MainActivity : AppCompatActivity() {
             iperfManager?.stopTests()
             resetTestUI()
         }
+
+        // ✅ Delay guide until layout is done
+        if (isFirstLaunch()) {
+            window.decorView.post {
+                showIntroGuide()
+                markFirstLaunchComplete()
+            }
+        }
     }
 
     // region UI Setup
     private fun bindViews() {
+
+        versionTextView = findViewById(R.id.appVersionText)
+
         outputView = findViewById(R.id.textOutput)
         scrollView = findViewById(R.id.scrollView)
         timerView = findViewById(R.id.textTimer)
@@ -185,10 +206,7 @@ class MainActivity : AppCompatActivity() {
 
         spinnerProtocol.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
-                parent: AdapterView<*>,
-                view: View?,
-                position: Int,
-                id: Long
+                parent: AdapterView<*>, view: View?, position: Int, id: Long
             ) {
                 val show = position != 0 && position != 3
                 bwLayout.visibility = if (show) View.VISIBLE else View.GONE
@@ -248,9 +266,20 @@ class MainActivity : AppCompatActivity() {
         ).forEach { it.visibility = View.VISIBLE }
 
         listOf(
-            optionsLayout, wtLayout, iterationLayout, titleAdvancedSettings, tdLayout,
-            intervalLayout, psLayout, bwLayout, protocolLayout, durationLayout,
-            portLayout, hostLayout, titleBasicSettings, titleiperftest
+            optionsLayout,
+            wtLayout,
+            iterationLayout,
+            titleAdvancedSettings,
+            tdLayout,
+            intervalLayout,
+            psLayout,
+            bwLayout,
+            protocolLayout,
+            durationLayout,
+            portLayout,
+            hostLayout,
+            titleBasicSettings,
+            titleiperftest
         ).forEach { it.visibility = View.GONE }
 
         iperfManager = IperfTestManage(
@@ -269,8 +298,7 @@ class MainActivity : AppCompatActivity() {
                 stopBtn.isEnabled = false
                 stopBtn.visibility = View.GONE
             },
-            isAutoReduceEnabled = { autoReduceCheckbox.isChecked }
-        )
+            isAutoReduceEnabled = { autoReduceCheckbox.isChecked })
 
         val iterations = testIterations.text.toString().toIntOrNull() ?: 1
         val waitTime = iterationWaitTime.text.toString().toIntOrNull() ?: 15
@@ -290,9 +318,20 @@ class MainActivity : AppCompatActivity() {
         outputLayout.visibility = View.GONE
 
         listOf(
-            optionsLayout, wtLayout, iterationLayout, titleAdvancedSettings, tdLayout,
-            intervalLayout, psLayout, bwLayout, protocolLayout, durationLayout,
-            portLayout, hostLayout, titleBasicSettings, titleiperftest
+            optionsLayout,
+            wtLayout,
+            iterationLayout,
+            titleAdvancedSettings,
+            tdLayout,
+            intervalLayout,
+            psLayout,
+            bwLayout,
+            protocolLayout,
+            durationLayout,
+            portLayout,
+            hostLayout,
+            titleBasicSettings,
+            titleiperftest
         ).forEach { it.visibility = View.VISIBLE }
     }
     // endregion
@@ -304,7 +343,8 @@ class MainActivity : AppCompatActivity() {
             while (isActive) {
                 val elapsed = System.currentTimeMillis() - startTimeMillis
                 val formatted = String.format(
-                    Locale.getDefault(), "%02d:%02d:%02d",
+                    Locale.getDefault(),
+                    "%02d:%02d:%02d",
                     (elapsed / 3600000).toInt(),
                     (elapsed / 60000 % 60).toInt(),
                     (elapsed / 1000 % 60).toInt()
@@ -428,11 +468,122 @@ class MainActivity : AppCompatActivity() {
             else -> getString(R.string.info_default)
         }
 
-        AlertDialog.Builder(this)
-            .setTitle("Info")
-            .setMessage(message)
-            .setPositiveButton("OK", null)
+        AlertDialog.Builder(this).setTitle("Info").setMessage(message).setPositiveButton("OK", null)
             .show()
     }
     // endregion
+
+    // region Version & Social Links
+    fun onVersionClick(view: View) {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_social_links, null)
+
+        val dialog = AlertDialog.Builder(this).setTitle("Connect with Abhishek").setView(dialogView)
+            .setNegativeButton("Close", null).create()
+
+        dialogView.findViewById<ImageView>(R.id.githubIcon).setOnClickListener {
+            openUrl("https://github.com/Abhi5h3k")
+        }
+
+        dialogView.findViewById<ImageView>(R.id.linkedinIcon).setOnClickListener {
+            openUrl("https://www.linkedin.com/in/abhi5h3k/")
+        }
+
+        dialogView.findViewById<ImageView>(R.id.shareIcon).setOnClickListener {
+            shareApp()
+        }
+
+        dialog.show()
+    }
+
+    private fun openUrl(url: String) {
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+        startActivity(intent)
+    }
+
+    private fun shareApp() {
+        val shareIntent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_SUBJECT, "Check out CellularLab 🚀")
+            putExtra(
+                Intent.EXTRA_TEXT,
+                "📱 CellularLab is a powerful iPerf3-based network tester for Android!\n" + "✅ TCP/UDP\n✅ Smart ramp-up\n✅ Logs & auto testing\n\n" + "👉 Download from GitHub: https://github.com/Abhi5h3k/CellularLab/releases"
+            )
+            type = "text/plain"
+        }
+        startActivity(Intent.createChooser(shareIntent, "Share via"))
+    }
+    // endregion
+
+    // region First Launch Logic
+    private fun isFirstLaunch(): Boolean {
+        val prefs = getSharedPreferences("cellularlab_prefs", MODE_PRIVATE)
+        return prefs.getBoolean("first_launch", true)
+    }
+
+    private fun markFirstLaunchComplete() {
+        val prefs = getSharedPreferences("cellularlab_prefs", MODE_PRIVATE)
+        prefs.edit().putBoolean("first_launch", false).apply()
+    }
+
+
+    fun showIntroGuide() {
+        // Delay execution until the view is fully laid out
+        window.decorView.post {
+            val sequence = TapTargetSequence(this)
+                .targets(
+                    themedTarget(
+                        versionTextView,
+                        "About the Developer",
+                        "Tap to learn about the developer or share this app.",
+                        1
+                    ),
+                    themedTarget(
+                        inputServerIp,
+                        "Server IP",
+                        "Enter the IP address of the iPerf3 server you want to test against.\n\nTap the info icon beside each field for more guidance.",
+                        2
+                    ),
+                )
+                .listener(object : TapTargetSequence.Listener {
+                    override fun onSequenceFinish() {
+                        Toast.makeText(
+                            this@MainActivity,
+                            "You're ready to start testing 🚀",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+
+                    override fun onSequenceStep(lastTarget: TapTarget, targetClicked: Boolean) {}
+                    override fun onSequenceCanceled(lastTarget: TapTarget?) {}
+                })
+
+            sequence.start()
+        }
+    }
+
+
+    fun themedTarget(
+        view: View,
+        title: String,
+        description: String,
+        id: Int,
+        radius: Int = 60
+    ): TapTarget {
+        return TapTarget.forView(view, title, description)
+            .outerCircleColor(R.color.colorAccent)
+            .titleTextColor(android.R.color.white)
+            .descriptionTextColor(android.R.color.white)
+            .textTypeface(Typeface.SANS_SERIF)
+            .dimColor(R.color.colorPrimaryDark)
+            .tintTarget(true)
+            .transparentTarget(true)
+            .drawShadow(true)
+            .id(id)
+            .targetRadius(radius) // 👈 This increases tap region
+        //.cancelable(false) // ❌ Commented out so tapping outside cancels
+    }
+
+
+    // endregion
+
 }

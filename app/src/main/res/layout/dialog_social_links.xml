@@ -1,0 +1,31 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:orientation="horizontal"
+    android:padding="16dp">
+
+    <ImageView
+        android:id="@+id/githubIcon"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_margin="8dp"
+        android:contentDescription="GitHub"
+        android:src="@drawable/ic_github" />
+
+    <ImageView
+        android:id="@+id/linkedinIcon"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_margin="8dp"
+        android:contentDescription="LinkedIn"
+        android:src="@drawable/ic_linkedin" />
+
+    <ImageView
+        android:id="@+id/shareIcon"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_margin="8dp"
+        android:contentDescription="Share"
+        android:src="@drawable/ic_share" />
+</LinearLayout>

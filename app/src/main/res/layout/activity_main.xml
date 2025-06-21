@@ -22,7 +22,10 @@
             android:background="@drawable/version_badge_bg"
             android:elevation="4dp"
             android:textStyle="bold"
-            android:layout_margin="8dp" />
+            android:layout_margin="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:onClick="onVersionClick" />
     </FrameLayout>
 
 
@@ -102,6 +105,8 @@
                         android:contentDescription="Info"
                         android:onClick="onInfoIconClick"
                         android:src="@drawable/ic_info" />
+
+
                 </LinearLayout>
 
                 <!-- Input Field -->

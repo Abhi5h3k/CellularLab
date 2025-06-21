@@ -17,6 +17,7 @@ androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-co
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+taptargetview = { module = "com.getkeepsafe.taptargetview:taptargetview", version = "1.13.3" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
