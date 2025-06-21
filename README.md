@@ -15,7 +15,6 @@
 [iPerf3](https://github.com/esnet/iperf) is an open-source command-line tool by ESnet used to:
 - Measure TCP and UDP bandwidth
 - Diagnose jitter, packet loss, and latency
-- Operate in both client and server modes
 
 CellularLab integrates iPerf3 natively to offer these features with an Android-native interface and intelligent test logic.
 
@@ -71,7 +70,6 @@ Ideal for automated or lab-based network performance profiling.
 - Enable debug/verbose output
 - Auto-scroll logs
 - Wait between iterations
-- Export logs with one tap
 
 ---
 
