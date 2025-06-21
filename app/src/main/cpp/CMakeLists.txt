@@ -1,43 +1,56 @@
-cmake_minimum_required(VERSION 3.4.1)
-set(IPERF_SOURCE_DIR ${CMAKE_SOURCE_DIR}/iperf)
+# 📌 Minimum CMake version required
+cmake_minimum_required(VERSION 3.21)
+
+# 📛 Project name
 project("cellularlab")
-add_definitions(-DHAVE_PTHREAD)
 
-if (ANDROID)
-    add_definitions(-D__ANDROID__)
-endif()
+# ✅ Print current CMake version
+message(STATUS "🚀 CMake version in use: ${CMAKE_VERSION}")
 
+# 📂 Define source folder paths
+set(IPERF_SRC_DIR ${CMAKE_SOURCE_DIR}/iperf/iperf-3.19)
+set(JNI_SRC_FILE ${CMAKE_SOURCE_DIR}/iperf/iperf_jni.c)
+
+# ✅ Set C standard
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_STANDARD_REQUIRED ON)
+
+# 📦 Declare native shared library
 add_library(cellularlab SHARED
-        # Add your pthread workaround files
-        ${IPERF_SOURCE_DIR}/iperf_pthread.c
-        ${IPERF_SOURCE_DIR}/iperf_pthread.h
-        # Add JNI wrapper
-        ${IPERF_SOURCE_DIR}/iperf_jni.c
-        # Provides a relative path to your source file(s).
-        ${IPERF_SOURCE_DIR}/main.c
-        ${IPERF_SOURCE_DIR}/iperf_api.c
-        ${IPERF_SOURCE_DIR}/iperf_auth.c
-        ${IPERF_SOURCE_DIR}/iperf_client_api.c
-        ${IPERF_SOURCE_DIR}/iperf_error.c
-        ${IPERF_SOURCE_DIR}/iperf_locale.c
-        ${IPERF_SOURCE_DIR}/iperf_sctp.c
-        ${IPERF_SOURCE_DIR}/iperf_server_api.c
-        ${IPERF_SOURCE_DIR}/iperf_tcp.c
-        ${IPERF_SOURCE_DIR}/iperf_time.c
-        ${IPERF_SOURCE_DIR}/iperf_udp.c
-        ${IPERF_SOURCE_DIR}/iperf_util.c
-        ${IPERF_SOURCE_DIR}/net.c
-        ${IPERF_SOURCE_DIR}/tcp_info.c
-        ${IPERF_SOURCE_DIR}/timer.c
-        ${IPERF_SOURCE_DIR}/units.c
-        ${IPERF_SOURCE_DIR}/dscp.c
-        ${IPERF_SOURCE_DIR}/cjson.c
+        ${JNI_SRC_FILE}                        # JNI interface
+        ${IPERF_SRC_DIR}/iperf_pthread.c      # pthread workaround
+        ${IPERF_SRC_DIR}/iperf_api.c
+        ${IPERF_SRC_DIR}/iperf_client_api.c
+        ${IPERF_SRC_DIR}/iperf_util.c
+        ${IPERF_SRC_DIR}/iperf_udp.c
+        ${IPERF_SRC_DIR}/iperf_tcp.c
+        ${IPERF_SRC_DIR}/net.c
+        ${IPERF_SRC_DIR}/timer.c
+        ${IPERF_SRC_DIR}/units.c
+        ${IPERF_SRC_DIR}/iperf_error.c
+        ${IPERF_SRC_DIR}/iperf_time.c
+        ${IPERF_SRC_DIR}/iperf_locale.c
+        ${IPERF_SRC_DIR}/cjson.c
+        ${IPERF_SRC_DIR}/tcp_info.c
+        ${IPERF_SRC_DIR}/dscp.c
 )
 
-target_include_directories(cellularlab PRIVATE ${CMAKE_SOURCE_DIR})
+# 📍 Add include directories
+target_include_directories(cellularlab PRIVATE
+        ${IPERF_SRC_DIR}       # for iperf headers
+        ${CMAKE_SOURCE_DIR}/iperf  # for iperf_jni.h if needed
+)
 
+# 🏷️ Preprocessor macros
+target_compile_definitions(cellularlab PRIVATE HAVE_PTHREAD)
+
+# ⚙️ Android-specific macro
+if (ANDROID)
+    target_compile_definitions(cellularlab PRIVATE __ANDROID__)
+endif()
+
+# 🔗 Required libraries
 find_package(Threads REQUIRED)
-
 target_link_libraries(cellularlab
         Threads::Threads
         log
