@@ -3,7 +3,8 @@
 [![Abhishek LinkedIn](https://img.shields.io/badge/Abhishek-LinkedIn-blue.svg?style=for-the-badge)](https://www.linkedin.com/in/abhi5h3k/)
 [![Abhishek StackOverflow](https://img.shields.io/badge/Abhishek-StackOverflow-orange.svg?style=for-the-badge)](https://stackoverflow.com/users/6870223/abhi?tab=profile)
 
-![Options](https://github.com/user-attachments/assets/15cf417a-8118-48a8-bd9e-9bbccd0d2f39)
+
+ <img src="https://github.com/user-attachments/assets/c909b8dd-32d3-4ad9-8612-67249c3dca79" alt="Options" width="80%" height="80%"/>
 
 
 **CellularLab** is a native Android app that serves as a smart frontend for [iPerf3](https://github.com/esnet/iperf), the de facto standard for TCP/UDP performance testing. Built with `JNI` and powered by a native integration of `iperf 3`, it delivers precise, low-level control and accurate results — all from your Android device.
@@ -37,20 +38,18 @@ CellularLab integrates iPerf3 natively to offer these features with an Android-n
 ## 🚀 Features & Capabilities
 
 ### ✅ Protocol Support
+
 - 🧪 **TCP**
 - 📡 **UDP**
 - 📈 **UDP Incremental Ramp-Up**
 - 🔄 **Hybrid TCP+UDP Strategy**
 - 🤖 **Smart Ramp-Up Strategy**
 
-### ✅ Test Directions
-- 📤 **Upload**
-- 📥 **Download (`-R`)**
-- 🔁 **Bidirectional (`--bidir`)**
-
 ---
 
 ## 🧠 Strategy Highlights
+
+ <img src="https://github.com/user-attachments/assets/5dbbfb7f-d833-40dd-9bd5-ac357f308844" alt="Stratergy" width="70%" height="70%"/>
 
 | Strategy         | Description |
 |------------------|-------------|
@@ -59,6 +58,17 @@ CellularLab integrates iPerf3 natively to offer these features with an Android-n
 | **Smart Ramp-Up** | Adaptive logic increases UDP load only if ≥90% success was achieved in the last step. Prevents unstable spikes. |
 
 Ideal for automated or lab-based network performance profiling.
+
+---
+
+
+### ✅ Test Directions
+
+<img src="https://github.com/user-attachments/assets/ea091615-9a5c-4240-bb69-0262166f4e86" alt="Test Direction" width="70%" height="70%"/>
+
+- 📤 **Upload**
+- 📥 **Download (`-R`)**
+- 🔁 **Bidirectional (`--bidir`)**
 
 ---
 
@@ -75,7 +85,7 @@ Ideal for automated or lab-based network performance profiling.
 
 ## 📁 Output
 
-![Auto scroll](https://github.com/user-attachments/assets/a218bded-bfd6-443c-923b-c379f083a7e7)
+<img src="https://github.com/user-attachments/assets/a218bded-bfd6-443c-923b-c379f083a7e7" alt="Output" width="70%" height="70%"/>
 
 
 - 🔴 Live iPerf3-style logs (per second)
@@ -88,3 +98,11 @@ Ideal for automated or lab-based network performance profiling.
 - 📄 Clean, readable formatting
 
 ---
+
+### 🌐 Public iPerf3 Servers
+
+You can use public iPerf3 servers listed here to test this app without setting up your own server:
+
+➡️ [R0GGER/public-iperf3-servers](https://github.com/R0GGER/public-iperf3-servers)
+
+**Note**: These are community-maintained and may be unstable or offline at times.
