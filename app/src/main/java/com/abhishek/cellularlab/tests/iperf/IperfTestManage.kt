@@ -330,30 +330,66 @@ class IperfTestManage(
 
     private suspend fun runTcpBidirAndGetBandwidth(args: Array<String>): Int {
         val tcpArgs = args.toMutableList().apply {
-            removeAll(listOf("-u", "-b")) // Ensure TCP mode
+            val removedFlags = mutableListOf<String>()
+
+            if (contains("-u")) {
+                removeAll(listOf("-u"))
+                removedFlags.add("-u")
+            }
+
+            val bIndex = indexOf("-b")
+            if (bIndex != -1 && bIndex + 1 < size) {
+                removeAt(bIndex + 1)
+                removeAt(bIndex)
+                removedFlags.add("-b <value>")
+            }
+
+            if (contains("-R")) {
+                remove("-R")
+                removedFlags.add("-R")
+            }
+
             if (!contains("--bidir")) add("--bidir")
+
+            if (removedFlags.isNotEmpty()) {
+                append(
+                    "⚙️ [TCP Bidir Prep] Removed incompatible flags: ${
+                        removedFlags.joinToString(
+                            ", "
+                        )
+                    }"
+                )
+            }
+
+            append("🔧 [TCP Bidir Prep] Temporary command for bandwidth estimation:\n${joinToString(" ")}")
         }
 
         var maxBandwidthMbps = 0
         val completed = CompletableDeferred<Unit>()
 
-        runIperfLive(tcpArgs.toTypedArray(), createIperfCallback(onLine = { line ->
-            parseThroughputMbps(line)?.let {
-                if (it > maxBandwidthMbps) maxBandwidthMbps = it
+        runIperfLive(
+            tcpArgs.toTypedArray(), createIperfCallback(
+            onLine = { line ->
+                parseThroughputMbps(line)?.let {
+                    if (it > maxBandwidthMbps) maxBandwidthMbps = it
+                }
+            },
+            onError = {
+                append("❌ TCP error: $it")
+                completed.complete(Unit)
+            },
+            onComplete = {
+                append("✅ TCP bidir test complete.")
+                completed.complete(Unit)
             }
-        }, onError = {
-            append("❌ TCP error: $it")
-            completed.complete(Unit)
-        }, onComplete = {
-            append("✅ TCP bidir test complete.")
-            completed.complete(Unit)
-        }))
+        ))
 
         val tcpTimeout = getTestDurationMillis(args, bufferSeconds = 10)
         withTimeoutOrNull(tcpTimeout) { completed.await() }
 
         return maxBandwidthMbps
     }
+
 
 // endregion
 
