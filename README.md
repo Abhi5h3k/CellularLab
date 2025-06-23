@@ -54,7 +54,7 @@ CellularLab integrates iPerf3 natively to offer these features with an Android-n
 
 ## 🧠 Strategy Highlights
 
- <img src="https://github.com/user-attachments/assets/5dbbfb7f-d833-40dd-9bd5-ac357f308844" alt="Stratergy" width="70%" height="70%"/>
+ <img src="https://github.com/user-attachments/assets/5dbbfb7f-d833-40dd-9bd5-ac357f308844" alt="Stratergy" width="50%" height="50%"/>
 
 | Strategy         | Description |
 |------------------|-------------|
@@ -69,7 +69,7 @@ Ideal for automated or lab-based network performance profiling.
 
 ### ✅ Test Directions
 
-<img src="https://github.com/user-attachments/assets/ea091615-9a5c-4240-bb69-0262166f4e86" alt="Test Direction" width="70%" height="70%"/>
+<img src="https://github.com/user-attachments/assets/ea091615-9a5c-4240-bb69-0262166f4e86" alt="Test Direction" width="50%" height="50%"/>
 
 - 📤 **Upload**
 - 📥 **Download (`-R`)**
@@ -104,10 +104,18 @@ Ideal for automated or lab-based network performance profiling.
 
 ---
 
+## 🛠️ How to Update iPerf3
+
+To keep your app up to date with the latest iPerf3 version:
+
+👉 See [docs/updating-iperf.md](docs/updating-iperf.md) for full instructions.
+
+---
+
 ### 🌐 Public iPerf3 Servers
 
 You can use public iPerf3 servers listed here to test this app without setting up your own server:
-
+➡️ [iperf.fr](https://iperf.fr/iperf-servers.php)
 ➡️ [R0GGER/public-iperf3-servers](https://github.com/R0GGER/public-iperf3-servers)
 
 **Note**: These are community-maintained and may be unstable or offline at times.
