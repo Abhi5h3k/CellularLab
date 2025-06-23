@@ -3,13 +3,13 @@
 [![Abhishek LinkedIn](https://img.shields.io/badge/Abhishek-LinkedIn-blue.svg?style=for-the-badge)](https://www.linkedin.com/in/abhi5h3k/)
 [![Abhishek StackOverflow](https://img.shields.io/badge/Abhishek-StackOverflow-orange.svg?style=for-the-badge)](https://stackoverflow.com/users/6870223/abhi?tab=profile)
 
+**CellularLab** is a native Android app that serves as a smart frontend for [iPerf3](https://github.com/esnet/iperf), the de facto standard for TCP/UDP performance testing. Built with `JNI` and powered by native iperf3 integration, it delivers precise, low-level control and accurate results — all from your Android device.
+
+## 🖼️ UI Preview
 
  <img src="https://github.com/user-attachments/assets/c909b8dd-32d3-4ad9-8612-67249c3dca79" alt="Options" width="80%" height="80%"/>
 
 
-**CellularLab** is a native Android app that serves as a smart frontend for [iPerf3](https://github.com/esnet/iperf), the de facto standard for TCP/UDP performance testing. Built with `JNI` and powered by a native integration of `iperf 3`, it delivers precise, low-level control and accurate results — all from your Android device.
-
- 
  
 ---
 
@@ -54,7 +54,7 @@ CellularLab integrates iPerf3 natively to offer these features with an Android-n
 
 ## 🧠 Strategy Highlights
 
- <img src="https://github.com/user-attachments/assets/5dbbfb7f-d833-40dd-9bd5-ac357f308844" alt="Stratergy" width="50%" height="50%"/>
+ <img src="https://github.com/user-attachments/assets/5dbbfb7f-d833-40dd-9bd5-ac357f308844" alt="Strategy" width="50%" height="50%"/>
 
 | Strategy         | Description |
 |------------------|-------------|
@@ -88,6 +88,18 @@ Ideal for automated or lab-based network performance profiling.
 
 ---
 
+### 🌐 Public iPerf3 Servers
+
+You can use public iPerf3 servers listed here to test this app without setting up your own server:
+
+➡️ [iperf.fr](https://iperf.fr/iperf-servers.php)
+
+➡️ [R0GGER/public-iperf3-servers](https://github.com/R0GGER/public-iperf3-servers)
+
+**Note**: These are community-maintained and may be unstable or offline at times.
+
+---
+
 ## 📁 Output
 
 <img src="https://github.com/user-attachments/assets/a218bded-bfd6-443c-923b-c379f083a7e7" alt="Output" width="70%" height="70%"/>
@@ -109,16 +121,6 @@ Ideal for automated or lab-based network performance profiling.
 To keep your app up to date with the latest iPerf3 version:
 
 👉 See [docs/updating-iperf.md](docs/updating-iperf.md) for full instructions.
-
----
-
-### 🌐 Public iPerf3 Servers
-
-You can use public iPerf3 servers listed here to test this app without setting up your own server:
-➡️ [iperf.fr](https://iperf.fr/iperf-servers.php)
-➡️ [R0GGER/public-iperf3-servers](https://github.com/R0GGER/public-iperf3-servers)
-
-**Note**: These are community-maintained and may be unstable or offline at times.
 
 ---
 
