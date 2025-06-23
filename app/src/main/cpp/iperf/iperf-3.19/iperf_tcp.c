@@ -46,9 +46,7 @@
 #include "cjson.h"
 
 #if defined(HAVE_FLOWLABEL)
-
 #include "flowlabel.h"
-
 #endif /* HAVE_FLOWLABEL */
 
 /* iperf_tcp_recv
@@ -222,7 +220,7 @@ iperf_tcp_listen(struct iperf_test *test) {
 
 #if defined(HAVE_IPPROTO_MPTCP)
         if (test->mptcp)
-        proto = IPPROTO_MPTCP;
+	    proto = IPPROTO_MPTCP;
 #endif
 
         if ((s = socket(res->ai_family, SOCK_STREAM, proto)) < 0) {
@@ -451,10 +449,10 @@ iperf_tcp_connect(struct iperf_test *test) {
 #if defined(HAVE_TCP_USER_TIMEOUT)
     if ((opt = test->settings->snd_timeout)) {
         if (setsockopt(s, IPPROTO_TCP, TCP_USER_TIMEOUT, &opt, sizeof(opt)) < 0) {
-        saved_errno = errno;
-        close(s);
-        freeaddrinfo(server_res);
-        errno = saved_errno;
+	    saved_errno = errno;
+	    close(s);
+	    freeaddrinfo(server_res);
+	    errno = saved_errno;
             i_errno = IESETUSERTIMEOUT;
             return -1;
         }
@@ -522,16 +520,16 @@ iperf_tcp_connect(struct iperf_test *test) {
 #if defined(HAVE_FLOWLABEL)
     if (test->settings->flowlabel) {
         if (server_res->ai_addr->sa_family != AF_INET6) {
-            saved_errno = errno;
-            close(s);
-            freeaddrinfo(server_res);
-            errno = saved_errno;
+	    saved_errno = errno;
+	    close(s);
+	    freeaddrinfo(server_res);
+	    errno = saved_errno;
             i_errno = IESETFLOW;
             return -1;
-        } else {
-            struct sockaddr_in6 *sa6P = (struct sockaddr_in6 *) server_res->ai_addr;
+	} else {
+	    struct sockaddr_in6* sa6P = (struct sockaddr_in6*) server_res->ai_addr;
             char freq_buf[sizeof(struct in6_flowlabel_req)];
-            struct in6_flowlabel_req *freq = (struct in6_flowlabel_req *) freq_buf;
+            struct in6_flowlabel_req *freq = (struct in6_flowlabel_req *)freq_buf;
             int freq_len = sizeof(*freq);
 
             memset(freq, 0, sizeof(*freq));
@@ -542,10 +540,10 @@ iperf_tcp_connect(struct iperf_test *test) {
             memcpy(&freq->flr_dst, &sa6P->sin6_addr, 16);
 
             if (setsockopt(s, IPPROTO_IPV6, IPV6_FLOWLABEL_MGR, freq, freq_len) < 0) {
-                saved_errno = errno;
+		saved_errno = errno;
                 close(s);
                 freeaddrinfo(server_res);
-                errno = saved_errno;
+		errno = saved_errno;
                 i_errno = IESETFLOW;
                 return -1;
             }
@@ -553,14 +551,14 @@ iperf_tcp_connect(struct iperf_test *test) {
 
             opt = 1;
             if (setsockopt(s, IPPROTO_IPV6, IPV6_FLOWINFO_SEND, &opt, sizeof(opt)) < 0) {
-                saved_errno = errno;
+		saved_errno = errno;
                 close(s);
                 freeaddrinfo(server_res);
-                errno = saved_errno;
+		errno = saved_errno;
                 i_errno = IESETFLOW;
                 return -1;
             }
-        }
+	}
     }
 #endif /* HAVE_FLOWLABEL */
 

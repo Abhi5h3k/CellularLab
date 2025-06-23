@@ -43,8 +43,6 @@
 #include "iperf_util.h"
 #include "iperf_locale.h"
 #include "iperf_time.h"
-#include "iperf_pthread.h"
-#include "iperf_fd_safe.h"
 #include "net.h"
 #include "timer.h"
 
@@ -404,6 +402,7 @@ iperf_handle_message_client(struct iperf_test *test) {
 }
 
 
+
 /* iperf_connect -- client to server connection function */
 int
 iperf_connect(struct iperf_test *test) {
@@ -457,7 +456,7 @@ iperf_connect(struct iperf_test *test) {
         return -1;
     }
 
-    SAFE_FD_SET(test->ctrl_sck, &test->read_set);
+    FD_SET(test->ctrl_sck, &test->read_set);
     if (test->ctrl_sck > test->max_fd) test->max_fd = test->ctrl_sck;
 
     len = sizeof(opt);
@@ -849,7 +848,7 @@ iperf_run_client(struct iperf_test *test) {
                 errno = rc;
                 iperf_err(test, "cleanup_and_fail in pthread_cancel - %s", iperf_strerror(i_errno));
             }
-            rc = pthread_join(sp->thr, NULL);
+            rc = pthread_join(sp->thr, NULL); 
             if (rc != 0 && rc != ESRCH) {
                 i_errno = IEPTHREADJOIN;
                 errno = rc;

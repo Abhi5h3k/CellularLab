@@ -45,6 +45,7 @@
 #include "net.h"
 
 
+
 /* iperf_sctp_recv
  *
  * receives the data for SCTP
@@ -60,12 +61,12 @@ iperf_sctp_recv(struct iperf_stream *sp) {
 
     /* Only count bytes received while we're in the correct state. */
     if (sp->test->state == TEST_RUNNING) {
-    sp->result->bytes_received += r;
-    sp->result->bytes_received_this_interval += r;
+	sp->result->bytes_received += r;
+	sp->result->bytes_received_this_interval += r;
     }
     else {
-    if (sp->test->debug)
-        printf("Late receive, state = %d\n", sp->test->state);
+	if (sp->test->debug)
+	    printf("Late receive, state = %d\n", sp->test->state);
     }
 
     return r;
@@ -98,6 +99,7 @@ iperf_sctp_send(struct iperf_stream *sp) {
     return -1;
 #endif /* HAVE_SCTP_H */
 }
+
 
 
 /* iperf_sctp_accept
@@ -225,14 +227,14 @@ iperf_sctp_listen(struct iperf_test *test) {
         else
             opt = 1;
         if (setsockopt(s, IPPROTO_IPV6, IPV6_V6ONLY,
-               (char *) &opt, sizeof(opt)) < 0) {
-        saved_errno = errno;
-        close(s);
-        freeaddrinfo(res);
-        errno = saved_errno;
-        i_errno = IEPROTOCOL;
-        return -1;
-    }
+		       (char *) &opt, sizeof(opt)) < 0) {
+	    saved_errno = errno;
+	    close(s);
+	    freeaddrinfo(res);
+	    errno = saved_errno;
+	    i_errno = IEPROTOCOL;
+	    return -1;
+	}
     }
 #endif /* IPV6_V6ONLY */
 
@@ -306,16 +308,16 @@ iperf_sctp_connect(struct iperf_test *test) {
     hints.ai_socktype = SOCK_STREAM;
     snprintf(portstr, sizeof(portstr), "%d", test->server_port);
     if ((gerror = getaddrinfo(test->server_hostname, portstr, &hints, &server_res)) != 0) {
-    if (test->bind_address)
-        freeaddrinfo(local_res);
+	if (test->bind_address)
+	    freeaddrinfo(local_res);
         i_errno = IESTREAMCONNECT;
         return -1;
     }
 
     s = socket(server_res->ai_family, SOCK_STREAM, IPPROTO_SCTP);
     if (s < 0) {
-    freeaddrinfo(local_res);
-    freeaddrinfo(server_res);
+	freeaddrinfo(local_res);
+	freeaddrinfo(server_res);
         i_errno = IESTREAMCONNECT;
         return -1;
     }
@@ -366,11 +368,11 @@ iperf_sctp_connect(struct iperf_test *test) {
         lcladdr->sin_port = htons(test->bind_port);
 
         if (bind(s, (struct sockaddr *) local_res->ai_addr, local_res->ai_addrlen) < 0) {
-        saved_errno = errno;
-        close(s);
-        freeaddrinfo(local_res);
-        freeaddrinfo(server_res);
-        errno = saved_errno;
+	    saved_errno = errno;
+	    close(s);
+	    freeaddrinfo(local_res);
+	    freeaddrinfo(server_res);
+	    errno = saved_errno;
             i_errno = IESTREAMCONNECT;
             return -1;
         }
@@ -378,40 +380,40 @@ iperf_sctp_connect(struct iperf_test *test) {
     }
     /* --cport, no --bind */
     else if (test->bind_port) {
-    size_t addrlen;
-    struct sockaddr_storage lcl;
+	size_t addrlen;
+	struct sockaddr_storage lcl;
 
-    /* IPv4 */
-    if (server_res->ai_family == AF_INET) {
-        struct sockaddr_in *lcladdr = (struct sockaddr_in *) &lcl;
-        lcladdr->sin_family = AF_INET;
-        lcladdr->sin_port = htons(test->bind_port);
-        lcladdr->sin_addr.s_addr = INADDR_ANY;
-        addrlen = sizeof(struct sockaddr_in);
-    }
-    /* IPv6 */
-    else if (server_res->ai_family == AF_INET6) {
-        struct sockaddr_in6 *lcladdr = (struct sockaddr_in6 *) &lcl;
-        lcladdr->sin6_family = AF_INET6;
-        lcladdr->sin6_port = htons(test->bind_port);
-        lcladdr->sin6_addr = in6addr_any;
-        addrlen = sizeof(struct sockaddr_in6);
-    }
-    /* Unknown protocol */
-    else {
-        saved_errno = errno;
-        close(s);
-        freeaddrinfo(server_res);
-        errno = saved_errno;
+	/* IPv4 */
+	if (server_res->ai_family == AF_INET) {
+	    struct sockaddr_in *lcladdr = (struct sockaddr_in *) &lcl;
+	    lcladdr->sin_family = AF_INET;
+	    lcladdr->sin_port = htons(test->bind_port);
+	    lcladdr->sin_addr.s_addr = INADDR_ANY;
+	    addrlen = sizeof(struct sockaddr_in);
+	}
+	/* IPv6 */
+	else if (server_res->ai_family == AF_INET6) {
+	    struct sockaddr_in6 *lcladdr = (struct sockaddr_in6 *) &lcl;
+	    lcladdr->sin6_family = AF_INET6;
+	    lcladdr->sin6_port = htons(test->bind_port);
+	    lcladdr->sin6_addr = in6addr_any;
+	    addrlen = sizeof(struct sockaddr_in6);
+	}
+	/* Unknown protocol */
+	else {
+	    saved_errno = errno;
+	    close(s);
+	    freeaddrinfo(server_res);
+	    errno = saved_errno;
             i_errno = IEPROTOCOL;
             return -1;
-    }
+	}
 
         if (bind(s, (struct sockaddr *) &lcl, addrlen) < 0) {
-        saved_errno = errno;
-        close(s);
-        freeaddrinfo(server_res);
-        errno = saved_errno;
+	    saved_errno = errno;
+	    close(s);
+	    freeaddrinfo(server_res);
+	    errno = saved_errno;
             i_errno = IESTREAMCONNECT;
             return -1;
         }
@@ -431,24 +433,24 @@ iperf_sctp_connect(struct iperf_test *test) {
 
     if ((test->settings->mss >= 512 && test->settings->mss <= 131072)) {
 
-    /*
-     * Some platforms use a struct sctp_assoc_value as the
-     * argument to SCTP_MAXSEG.  Other (older API implementations)
-     * take an int.  FreeBSD 10 and CentOS 6 support SCTP_MAXSEG,
-     * but OpenSolaris 11 doesn't.
-     */
+	/*
+	 * Some platforms use a struct sctp_assoc_value as the
+	 * argument to SCTP_MAXSEG.  Other (older API implementations)
+	 * take an int.  FreeBSD 10 and CentOS 6 support SCTP_MAXSEG,
+	 * but OpenSolaris 11 doesn't.
+	 */
 #ifdef HAVE_STRUCT_SCTP_ASSOC_VALUE
         struct sctp_assoc_value av;
 
-    /*
-     * Some platforms support SCTP_FUTURE_ASSOC, others need to
-     * (equivalently) do 0 here.  FreeBSD 10 is an example of the
-     * former, CentOS 6 Linux is an example of the latter.
-     */
+	/*
+	 * Some platforms support SCTP_FUTURE_ASSOC, others need to
+	 * (equivalently) do 0 here.  FreeBSD 10 is an example of the
+	 * former, CentOS 6 Linux is an example of the latter.
+	 */
 #ifdef SCTP_FUTURE_ASSOC
         av.assoc_id = SCTP_FUTURE_ASSOC;
 #else
-    av.assoc_id = 0;
+	av.assoc_id = 0;
 #endif
         av.assoc_value = test->settings->mss;
 
@@ -461,14 +463,14 @@ iperf_sctp_connect(struct iperf_test *test) {
             return -1;
         }
 #else
-    opt = test->settings->mss;
+	opt = test->settings->mss;
 
-    /*
-     * Solaris might not support this option.  If it doesn't work,
-     * ignore the error (at least for now).
-     */
+	/*
+	 * Solaris might not support this option.  If it doesn't work,
+	 * ignore the error (at least for now).
+	 */
         if (setsockopt(s, IPPROTO_SCTP, SCTP_MAXSEG, &opt, sizeof(opt)) < 0 &&
-        errno != ENOPROTOOPT) {
+	    errno != ENOPROTOOPT) {
             saved_errno = errno;
             close(s);
             freeaddrinfo(server_res);
@@ -506,20 +508,20 @@ iperf_sctp_connect(struct iperf_test *test) {
 
     /* TODO support sctp_connectx() to avoid heartbeating. */
     if (connect(s, (struct sockaddr *) server_res->ai_addr, server_res->ai_addrlen) < 0 && errno != EINPROGRESS) {
-    saved_errno = errno;
-    close(s);
-    freeaddrinfo(server_res);
-    errno = saved_errno;
+	saved_errno = errno;
+	close(s);
+	freeaddrinfo(server_res);
+	errno = saved_errno;
         i_errno = IESTREAMCONNECT;
         return -1;
     }
 
     /* Send cookie for verification */
     if (Nwrite(s, test->cookie, COOKIE_SIZE, Psctp) < 0) {
-    saved_errno = errno;
-    close(s);
-    freeaddrinfo(server_res);
-    errno = saved_errno;
+	saved_errno = errno;
+	close(s);
+	freeaddrinfo(server_res);
+	errno = saved_errno;
         i_errno = IESENDCOOKIE;
         return -1;
     }
@@ -533,7 +535,7 @@ iperf_sctp_connect(struct iperf_test *test) {
      */
     opt = 0;
     if (setsockopt(s, IPPROTO_SCTP, SCTP_DISABLE_FRAGMENTS, &opt, sizeof(opt)) < 0 &&
-    errno != ENOPROTOOPT) {
+	errno != ENOPROTOOPT) {
         saved_errno = errno;
         close(s);
         freeaddrinfo(server_res);
@@ -551,6 +553,7 @@ iperf_sctp_connect(struct iperf_test *test) {
 }
 
 
+
 int
 iperf_sctp_init(struct iperf_test *test) {
 #if defined(HAVE_SCTP_H)
@@ -560,6 +563,7 @@ iperf_sctp_init(struct iperf_test *test) {
     return -1;
 #endif /* HAVE_SCTP_H */
 }
+
 
 
 /* iperf_sctp_bindx
@@ -683,7 +687,7 @@ iperf_sctp_bindx(struct iperf_test *test, int s, int is_server) {
         for (ai = ai0; ai; ai = ai->ai_next) {
             if (domain != AF_UNSPEC && domain != ai->ai_family)
                 continue;
-        memcpy(bp, ai->ai_addr, ai->ai_addrlen);
+	    memcpy(bp, ai->ai_addr, ai->ai_addrlen);
             bp += ai->ai_addrlen;
         }
     }
@@ -744,7 +748,7 @@ iperf_sctp_get_info(struct iperf_stream *sp, struct iperf_sctp_info *sctp_info) 
 #ifdef SCTP_FUTURE_ASSOC
         assoc_id = SCTP_FUTURE_ASSOC;
 #else
-    assoc_id = 0;
+	assoc_id = 0;
 #endif
         len = sizeof(status);
         rc = sctp_opt_info(sp->socket, assoc_id, SCTP_STATUS, &status, &len);

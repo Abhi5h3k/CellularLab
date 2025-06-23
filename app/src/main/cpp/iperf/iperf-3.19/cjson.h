@@ -180,7 +180,6 @@ CJSON_PUBLIC(cJSON *)cJSON_GetObjectItem(const cJSON *const object, const char *
 
 CJSON_PUBLIC(cJSON *)cJSON_GetObjectItemCaseSensitive(const cJSON *const object,
                                                       const char *const string);
-
 CJSON_PUBLIC(cJSON_bool) cJSON_HasObjectItem(const cJSON *object, const char *string);
 /* For analysing failed parses. This returns a pointer to the parse error. You'll probably need to look a few chars back to make sense of it. Defined when cJSON_Parse() returns 0. 0 when cJSON_Parse() succeeds. */
 CJSON_PUBLIC(const char *)cJSON_GetErrorPtr(void);
@@ -251,7 +250,6 @@ CJSON_PUBLIC(cJSON *)cJSON_CreateStringArray(const char *const *strings, int cou
 
 /* Append item to the specified array/object. */
 CJSON_PUBLIC(cJSON_bool) cJSON_AddItemToArray(cJSON *array, cJSON *item);
-
 CJSON_PUBLIC(cJSON_bool) cJSON_AddItemToObject(cJSON *object, const char *string, cJSON *item);
 /* Use this when string is definitely const (i.e. a literal, or as good as), and will definitely survive the cJSON object.
  * WARNING: When this function was used, make sure to always check that (item->type & cJSON_StringIsConst) is zero before
@@ -267,15 +265,12 @@ cJSON_AddItemReferenceToObject(cJSON *object, const char *string, cJSON *item);
 CJSON_PUBLIC(cJSON *)cJSON_DetachItemViaPointer(cJSON *parent, cJSON *const item);
 
 CJSON_PUBLIC(cJSON *)cJSON_DetachItemFromArray(cJSON *array, int which);
-
 CJSON_PUBLIC(void) cJSON_DeleteItemFromArray(cJSON *array, int which);
 
 CJSON_PUBLIC(cJSON *)cJSON_DetachItemFromObject(cJSON *object, const char *string);
 
 CJSON_PUBLIC(cJSON *)cJSON_DetachItemFromObjectCaseSensitive(cJSON *object, const char *string);
-
 CJSON_PUBLIC(void) cJSON_DeleteItemFromObject(cJSON *object, const char *string);
-
 CJSON_PUBLIC(void) cJSON_DeleteItemFromObjectCaseSensitive(cJSON *object, const char *string);
 
 /* Update array items. */
@@ -283,7 +278,6 @@ CJSON_PUBLIC(cJSON_bool) cJSON_InsertItemInArray(cJSON *array, int which,
                                                  cJSON *newitem); /* Shifts pre-existing items to the right. */
 CJSON_PUBLIC(cJSON_bool)
 cJSON_ReplaceItemViaPointer(cJSON *const parent, cJSON *const item, cJSON *replacement);
-
 CJSON_PUBLIC(cJSON_bool) cJSON_ReplaceItemInArray(cJSON *array, int which, cJSON *newitem);
 
 CJSON_PUBLIC(cJSON_bool)
@@ -335,7 +329,6 @@ CJSON_PUBLIC(cJSON*)cJSON_AddArrayToObject(cJSON *const object, const char *cons
 #define cJSON_SetIntValue(object, number) ((object) ? (object)->valueint = (object)->valuedouble = (number) : (number))
 /* helper for the cJSON_SetNumberValue macro */
 CJSON_PUBLIC(double) cJSON_SetNumberHelper(cJSON *object, double number);
-
 #define cJSON_SetNumberValue(object, number) ((object != NULL) ? cJSON_SetNumberHelper(object, (double)number) : (number))
 /* Change the valuestring of a cJSON_String object, only takes effect when type of object is cJSON_String */
 CJSON_PUBLIC(char*)cJSON_SetValuestring(cJSON *object, const char *valuestring);
@@ -352,7 +345,6 @@ CJSON_PUBLIC(char*)cJSON_SetValuestring(cJSON *object, const char *valuestring);
 
 /* malloc/free objects using the malloc/free functions that have been set with cJSON_InitHooks */
 CJSON_PUBLIC(void *)cJSON_malloc(size_t size);
-
 CJSON_PUBLIC(void) cJSON_free(void *object);
 
 #ifdef __cplusplus

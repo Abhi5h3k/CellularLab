@@ -155,9 +155,7 @@ static int case_insensitive_strcmp(const unsigned char *string1, const unsigned 
 
 typedef struct internal_hooks {
     void *(CJSON_CDECL *allocate)(size_t size);
-
     void (CJSON_CDECL *deallocate)(void *pointer);
-
     void *(CJSON_CDECL *reallocate)(void *pointer, size_t size);
 } internal_hooks;
 
@@ -1753,7 +1751,6 @@ CJSON_PUBLIC(cJSON_bool) cJSON_AddItemToArray(cJSON *array, cJSON *item) {
 #ifdef __GNUC__
 #pragma GCC diagnostic ignored "-Wcast-qual"
 #endif
-
 /* helper function to cast away const */
 static void *cast_away_const(const void *string) {
     return (void *) string;

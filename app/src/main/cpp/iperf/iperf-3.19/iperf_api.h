@@ -32,7 +32,6 @@
 #include <setjmp.h>
 #include <stdio.h>
 #include <stdint.h>
-
 #ifdef __cplusplus
 extern "C" { /* open extern "C" */
 #endif
@@ -418,115 +417,74 @@ int       iperf_set_control_keepalive(struct iperf_test *test);
 #endif //HAVE_TCP_KEEPALIVE
 
 int has_tcpinfo(void);
-
 int has_tcpinfo_retransmits(void);
-
 void save_tcpinfo(struct iperf_stream *sp, struct iperf_interval_results *irp);
-
 long get_total_retransmits(struct iperf_interval_results *irp);
-
 long get_snd_cwnd(struct iperf_interval_results *irp);
-
 long get_snd_wnd(struct iperf_interval_results *irp);
-
 long get_rtt(struct iperf_interval_results *irp);
-
 long get_rttvar(struct iperf_interval_results *irp);
-
 long get_pmtu(struct iperf_interval_results *irp);
-
 void print_tcpinfo(struct iperf_test *test);
-
 void build_tcpinfo_message(struct iperf_interval_results *r, char *message);
 
 int iperf_set_send_state(struct iperf_test *test, signed char state);
-
 void iperf_check_throttle(struct iperf_stream *sp, struct iperf_time *nowP);
-
 int iperf_send_mt(struct iperf_stream *) /* __attribute__((hot)) */;
-
 int iperf_recv_mt(struct iperf_stream *);
-
 void iperf_catch_sigend(void (*handler)(int));
-
 void iperf_got_sigend(struct iperf_test *test, int sig) __attribute__ ((noreturn));
-
 void usage(void);
 
 void usage_long(FILE *f);
-
 void warning(const char *);
-
 int iperf_exchange_results(struct iperf_test *);
-
 int iperf_init_test(struct iperf_test *);
-
 int iperf_create_send_timers(struct iperf_test *);
-
 int iperf_parse_arguments(struct iperf_test *, int, char **);
-
 int iperf_open_logfile(struct iperf_test *);
-
 void iperf_close_logfile(struct iperf_test *);
-
 void iperf_reset_test(struct iperf_test *);
 
 void iperf_reset_stats(struct iperf_test *test);
 
 struct protocol *get_protocol(struct iperf_test *, int);
-
 int set_protocol(struct iperf_test *, int);
 
 void iperf_on_new_stream(struct iperf_stream *);
-
 void iperf_on_test_start(struct iperf_test *);
-
 void iperf_on_connect(struct iperf_test *);
-
 void iperf_on_test_finish(struct iperf_test *);
 
 extern jmp_buf env;
 
 /* Client routines. */
 int iperf_run_client(struct iperf_test *);
-
 int iperf_connect(struct iperf_test *);
-
 int iperf_create_streams(struct iperf_test *, int sender);
-
 int iperf_handle_message_client(struct iperf_test *);
-
 int iperf_client_end(struct iperf_test *);
 
 /* Server routines. */
 int iperf_run_server(struct iperf_test *);
-
 int iperf_server_listen(struct iperf_test *);
-
 int iperf_accept(struct iperf_test *);
-
 int iperf_handle_message_server(struct iperf_test *);
-
 int iperf_create_pidfile(struct iperf_test *);
-
 int iperf_delete_pidfile(struct iperf_test *);
-
 void iperf_check_total_rate(struct iperf_test *, iperf_size_t);
 
 /* JSON output routines. */
 int iperf_json_start(struct iperf_test *);
-
 int iperf_json_finish(struct iperf_test *);
 
 /* CPU affinity routines */
 int iperf_setaffinity(struct iperf_test *, int affinity);
-
 int iperf_clearaffinity(struct iperf_test *);
 
 /* Custom printf routine. */
 int iperf_printf(struct iperf_test *test, const char *format,
                  ...) __attribute__ ((format(printf, 2, 3)));
-
 int iflush(struct iperf_test *test);
 
 /* Error routines. */
@@ -541,9 +499,7 @@ void iperf_signormalexit(struct iperf_test *test, const char *format,
 
 void iperf_exit(struct iperf_test *test, int exit_code, const char *format,
                 va_list argp) __attribute__ ((noreturn));
-
 char *iperf_strerror(int);
-
 extern int i_errno;
 enum {
     IENONE = 0,             // No error

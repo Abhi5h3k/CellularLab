@@ -13,9 +13,7 @@
 #define PTHREAD_CANCEL_ENABLE 0
 
 int pthread_setcanceltype(int type, int *oldtype);
-
 int pthread_setcancelstate(int state, int *oldstate);
-
 int pthread_cancel(pthread_t thread_id);
 
 #endif // defined(__ANDROID__)

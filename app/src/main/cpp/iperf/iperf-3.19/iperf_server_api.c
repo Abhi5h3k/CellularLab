@@ -58,7 +58,6 @@
 #include "units.h"
 #include "iperf_util.h"
 #include "iperf_locale.h"
-#include "iperf_fd_safe.h"
 
 #if defined(HAVE_TCP_CONGESTION)
 #if !defined(TCP_CA_NAME_MAX)
@@ -145,7 +144,7 @@ iperf_server_listen(struct iperf_test *test) {
 
     FD_ZERO(&test->read_set);
     FD_ZERO(&test->write_set);
-    SAFE_FD_SET(test->listener, &test->read_set);
+    FD_SET(test->listener, &test->read_set);
     if (test->listener > test->max_fd) test->max_fd = test->listener;
 
     return 0;
@@ -200,7 +199,7 @@ iperf_accept(struct iperf_test *test) {
             i_errno = IERECVCOOKIE;
             goto error_handling;
         }
-        SAFE_FD_SET(test->ctrl_sck, &test->read_set);
+        FD_SET(test->ctrl_sck, &test->read_set);
         if (test->ctrl_sck > test->max_fd) test->max_fd = test->ctrl_sck;
 
         if (iperf_set_send_state(test, PARAM_EXCHANGE) != 0)
@@ -864,7 +863,7 @@ iperf_run_server(struct iperf_test *test) {
                                 return -1;
                             }
                             test->listener = s;
-                            SAFE_FD_SET(test->listener, &test->read_set);
+                            FD_SET(test->listener, &test->read_set);
                             if (test->listener > test->max_fd) test->max_fd = test->listener;
                         }
                     }

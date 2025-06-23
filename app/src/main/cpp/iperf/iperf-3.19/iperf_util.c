@@ -249,21 +249,21 @@ get_optional_features(void) {
 
 #if defined(HAVE_FLOWLABEL)
     if (numfeatures > 0) {
-        strncat(features, ", ",
-                sizeof(features) - strlen(features) - 1);
+	strncat(features, ", ",
+		sizeof(features) - strlen(features) - 1);
     }
     strncat(features, "IPv6 flow label",
-            sizeof(features) - strlen(features) - 1);
+	sizeof(features) - strlen(features) - 1);
     numfeatures++;
 #endif /* HAVE_FLOWLABEL */
 
 #if defined(HAVE_SCTP_H)
     if (numfeatures > 0) {
-    strncat(features, ", ",
-        sizeof(features) - strlen(features) - 1);
+	strncat(features, ", ",
+		sizeof(features) - strlen(features) - 1);
     }
     strncat(features, "SCTP",
-    sizeof(features) - strlen(features) - 1);
+	sizeof(features) - strlen(features) - 1);
     numfeatures++;
 #endif /* HAVE_SCTP_H */
 
@@ -279,11 +279,11 @@ get_optional_features(void) {
 
 #if defined(HAVE_SENDFILE)
     if (numfeatures > 0) {
-        strncat(features, ", ",
-                sizeof(features) - strlen(features) - 1);
+	strncat(features, ", ",
+		sizeof(features) - strlen(features) - 1);
     }
     strncat(features, "sendfile / zerocopy",
-            sizeof(features) - strlen(features) - 1);
+	sizeof(features) - strlen(features) - 1);
     numfeatures++;
 #endif /* HAVE_SENDFILE */
 
@@ -299,31 +299,31 @@ get_optional_features(void) {
 
 #if defined(HAVE_SSL)
     if (numfeatures > 0) {
-    strncat(features, ", ",
-        sizeof(features) - strlen(features) - 1);
+	strncat(features, ", ",
+		sizeof(features) - strlen(features) - 1);
     }
     strncat(features, "authentication",
-    sizeof(features) - strlen(features) - 1);
+	sizeof(features) - strlen(features) - 1);
     numfeatures++;
 #endif /* HAVE_SSL */
 
 #if defined(HAVE_SO_BINDTODEVICE)
     if (numfeatures > 0) {
-    strncat(features, ", ",
-        sizeof(features) - strlen(features) - 1);
+	strncat(features, ", ",
+		sizeof(features) - strlen(features) - 1);
     }
     strncat(features, "bind to device",
-    sizeof(features) - strlen(features) - 1);
+	sizeof(features) - strlen(features) - 1);
     numfeatures++;
 #endif /* HAVE_SO_BINDTODEVICE */
 
 #if defined(HAVE_DONT_FRAGMENT)
     if (numfeatures > 0) {
-    strncat(features, ", ",
-        sizeof(features) - strlen(features) - 1);
+	strncat(features, ", ",
+		sizeof(features) - strlen(features) - 1);
     }
     strncat(features, "support IPv4 don't fragment",
-    sizeof(features) - strlen(features) - 1);
+	sizeof(features) - strlen(features) - 1);
     numfeatures++;
 #endif /* HAVE_DONT_FRAGMENT */
 
@@ -499,13 +499,13 @@ int daemon(int nochdir, int noclose)
         return -1;
     }
     if (pid > 0) {
-    /* Use _exit() to avoid doing atexit() stuff. */
-    _exit(0);
+        /* Use _exit() to avoid doing atexit() stuff. */
+        _exit(0);
     }
 
     sid = setsid();
     if (sid < 0) {
-    return -1;
+        return -1;
     }
 
     /*
@@ -516,22 +516,22 @@ int daemon(int nochdir, int noclose)
      */
     pid = fork();
     if (pid == -1) {
-    return -1;
+        return -1;
     } else if (pid != 0) {
-    _exit(0);
+        _exit(0);
     }
 
     if (!nochdir) {
-    chdir("/");
+        chdir("/");
     }
 
     if (!noclose && (fd = open("/dev/null", O_RDWR, 0)) != -1) {
-    dup2(fd, STDIN_FILENO);
-    dup2(fd, STDOUT_FILENO);
-    dup2(fd, STDERR_FILENO);
-    if (fd > 2) {
-        close(fd);
-    }
+        dup2(fd, STDIN_FILENO);
+        dup2(fd, STDOUT_FILENO);
+        dup2(fd, STDERR_FILENO);
+        if (fd > 2) {
+            close(fd);
+        }
     }
     return (0);
 }
@@ -572,50 +572,50 @@ int daemon(int nochdir, int noclose)
 ssize_t
 getdelim(char **buf, size_t *bufsiz, int delimiter, FILE *fp)
 {
-    char *ptr, *eptr;
+	char *ptr, *eptr;
 
 
-    if (*buf == NULL || *bufsiz == 0) {
-        *bufsiz = BUFSIZ;
-        if ((*buf = malloc(*bufsiz)) == NULL)
-            return -1;
-    }
+	if (*buf == NULL || *bufsiz == 0) {
+		*bufsiz = BUFSIZ;
+		if ((*buf = malloc(*bufsiz)) == NULL)
+			return -1;
+	}
 
-    for (ptr = *buf, eptr = *buf + *bufsiz;;) {
-        int c = fgetc(fp);
-        if (c == -1) {
-            if (feof(fp)) {
-                ssize_t diff = (ssize_t)(ptr - *buf);
-                if (diff != 0) {
-                    *ptr = '\0';
-                    return diff;
-                }
-            }
-            return -1;
-        }
-        *ptr++ = c;
-        if (c == delimiter) {
-            *ptr = '\0';
-            return ptr - *buf;
-        }
-        if (ptr + 2 >= eptr) {
-            char *nbuf;
-            size_t nbufsiz = *bufsiz * 2;
-            ssize_t d = ptr - *buf;
-            if ((nbuf = realloc(*buf, nbufsiz)) == NULL)
-                return -1;
-            *buf = nbuf;
-            *bufsiz = nbufsiz;
-            eptr = nbuf + nbufsiz;
-            ptr = nbuf + d;
-        }
-    }
+	for (ptr = *buf, eptr = *buf + *bufsiz;;) {
+		int c = fgetc(fp);
+		if (c == -1) {
+			if (feof(fp)) {
+				ssize_t diff = (ssize_t)(ptr - *buf);
+				if (diff != 0) {
+					*ptr = '\0';
+					return diff;
+				}
+			}
+			return -1;
+		}
+		*ptr++ = c;
+		if (c == delimiter) {
+			*ptr = '\0';
+			return ptr - *buf;
+		}
+		if (ptr + 2 >= eptr) {
+			char *nbuf;
+			size_t nbufsiz = *bufsiz * 2;
+			ssize_t d = ptr - *buf;
+			if ((nbuf = realloc(*buf, nbufsiz)) == NULL)
+				return -1;
+			*buf = nbuf;
+			*bufsiz = nbufsiz;
+			eptr = nbuf + nbufsiz;
+			ptr = nbuf + d;
+		}
+	}
 }
 
 ssize_t
 getline(char **buf, size_t *bufsiz, FILE *fp)
 {
-    return getdelim(buf, bufsiz, '\n', fp);
+	return getdelim(buf, bufsiz, '\n', fp);
 }
 
 #endif

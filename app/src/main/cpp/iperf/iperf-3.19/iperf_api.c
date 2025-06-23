@@ -82,7 +82,6 @@
 #include "cjson.h"
 #include "units.h"
 #include "iperf_util.h"
-#include "iperf_fd_safe.h"
 #include "iperf_locale.h"
 #include "version.h"
 #if defined(HAVE_SSL)

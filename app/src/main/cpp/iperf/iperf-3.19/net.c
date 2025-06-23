@@ -41,9 +41,7 @@
 
 #ifdef HAVE_SENDFILE
 #ifdef linux
-
 #include <sys/sendfile.h>
-
 #else
 #ifdef __FreeBSD__
 #include <sys/uio.h>
@@ -59,16 +57,13 @@
 #endif /* HAVE_SENDFILE */
 
 #ifdef HAVE_POLL_H
-
 #include <poll.h>
-
 #endif /* HAVE_POLL_H */
 
 #include "iperf.h"
 #include "iperf_util.h"
 #include "net.h"
 #include "timer.h"
-#include "iperf_fd_safe.h"
 
 static int nread_read_timeout = 10;
 static int nread_overall_timeout = 30;
@@ -404,7 +399,7 @@ Nrecv(int fd, char *buf, size_t count, int prot, int sock_opt) {
      */
     {
         FD_ZERO(&rfdset);
-        SAFE_FD_SET(fd, &rfdset);
+        FD_SET(fd, &rfdset);
         r = select(fd + 1, &rfdset, NULL, NULL, &timeout);
         if (r < 0) {
             return NET_HARDERROR;
@@ -430,7 +425,7 @@ Nrecv(int fd, char *buf, size_t count, int prot, int sock_opt) {
             break;
 
         total += r;
-        nleft -= r;
+        nleft -= r; 
         buf += r;
 
         /*
@@ -456,7 +451,7 @@ Nrecv(int fd, char *buf, size_t count, int prot, int sock_opt) {
             }
 
             FD_ZERO(&rfdset);
-            SAFE_FD_SET(fd, &rfdset);
+            FD_SET(fd, &rfdset);
             r = select(fd + 1, &rfdset, NULL, NULL, &timeout);
             if (r < 0) {
                 return NET_HARDERROR;
@@ -524,7 +519,7 @@ Nwrite(int fd, const char *buf, size_t count, int prot) {
                 case EAGAIN:
 #if (EAGAIN != EWOULDBLOCK)
                     /* XXX EWOULDBLOCK can't happen without non-blocking sockets */
-        case EWOULDBLOCK:
+		case EWOULDBLOCK:
 #endif
                     if (count == nleft)
                         return NET_SOFTERROR;
@@ -572,46 +567,46 @@ Nsendfile(int fromfd, int tofd, const char *buf, size_t count) {
 
     nleft = count;
     while (nleft > 0) {
-        offset = count - nleft;
+	offset = count - nleft;
 #ifdef linux
-        r = sendfile(tofd, fromfd, &offset, nleft);
-        if (r > 0)
-            nleft -= r;
+	r = sendfile(tofd, fromfd, &offset, nleft);
+	if (r > 0)
+	    nleft -= r;
 #elif defined(__FreeBSD__)
-        r = sendfile(fromfd, tofd, offset, nleft, NULL, &sent, 0);
-        nleft -= sent;
+	r = sendfile(fromfd, tofd, offset, nleft, NULL, &sent, 0);
+	nleft -= sent;
 #elif defined(__APPLE__) && defined(__MACH__) && defined(MAC_OS_X_VERSION_10_6)	/* OS X */
-        sent = nleft;
-        r = sendfile(fromfd, tofd, offset, &sent, NULL, 0);
-        nleft -= sent;
+	sent = nleft;
+	r = sendfile(fromfd, tofd, offset, &sent, NULL, 0);
+	nleft -= sent;
 #else
-        /* Shouldn't happen. */
-        r = -1;
-        errno = ENOSYS;
+	/* Shouldn't happen. */
+	r = -1;
+	errno = ENOSYS;
 #endif
-        if (r < 0) {
-            switch (errno) {
-                case EINTR:
-                case EAGAIN:
+	if (r < 0) {
+	    switch (errno) {
+		case EINTR:
+		case EAGAIN:
 #if (EAGAIN != EWOULDBLOCK)
                     /* XXX EWOULDBLOCK can't happen without non-blocking sockets */
-        case EWOULDBLOCK:
+		case EWOULDBLOCK:
 #endif
-                    if (count == nleft)
-                        return NET_SOFTERROR;
-                    return count - nleft;
+		if (count == nleft)
+		    return NET_SOFTERROR;
+		return count - nleft;
 
-                case ENOBUFS:
-                case ENOMEM:
-                    return NET_SOFTERROR;
+		case ENOBUFS:
+		case ENOMEM:
+		return NET_SOFTERROR;
 
-                default:
-                    return NET_HARDERROR;
-            }
-        }
+		default:
+		return NET_HARDERROR;
+	    }
+	}
 #ifdef linux
-        else if (r == 0)
-            return NET_SOFTERROR;
+	else if (r == 0)
+	    return NET_SOFTERROR;
 #endif
     }
     return count;

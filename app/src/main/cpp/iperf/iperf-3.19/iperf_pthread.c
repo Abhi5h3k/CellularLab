@@ -28,9 +28,7 @@ int iperf_set_thread_exit_handler() {
 }
 
 int pthread_setcanceltype(int type, int *oldtype) { return 0; }
-
 int pthread_setcancelstate(int state, int *oldstate) { return 0; }
-
 int pthread_cancel(pthread_t thread_id) {
     int status;
     if ((status = iperf_set_thread_exit_handler()) == 0) {

@@ -219,6 +219,6 @@ build_tcpinfo_message(struct iperf_interval_results *r, char *message) {
 #endif
 #if (defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)) && defined(TCP_INFO)
     sprintf(message, report_tcpInfo, r->tcpInfo.tcpi_snd_cwnd,
-        r->tcpInfo.tcpi_rcv_space, r->tcpInfo.tcpi_snd_ssthresh, r->tcpInfo.tcpi_rtt);
+	    r->tcpInfo.tcpi_rcv_space, r->tcpInfo.tcpi_snd_ssthresh, r->tcpInfo.tcpi_rtt);
 #endif
 }

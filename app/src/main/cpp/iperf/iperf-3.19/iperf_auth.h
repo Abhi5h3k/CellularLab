@@ -30,15 +30,10 @@
 #include <openssl/bio.h>
 
 int test_load_pubkey_from_file(const char *public_keyfile);
-
 int test_load_private_key_from_file(const char *private_keyfile);
-
 EVP_PKEY *load_pubkey_from_file(const char *file);
-
 EVP_PKEY *load_pubkey_from_base64(const char *buffer);
-
 EVP_PKEY *load_privkey_from_file(const char *file);
-
 EVP_PKEY *load_privkey_from_base64(const char *buffer);
 
 int encode_auth_setting(const char *username, const char *password, EVP_PKEY *public_key,

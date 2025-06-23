@@ -33,7 +33,6 @@
 
 #include "iperf.h"
 #include "iperf_api.h"
-
 #if defined(HAVE_SSL)
 #include "iperf_auth.h"
 #endif /* HAVE_SSL */
@@ -117,10 +116,8 @@ test_authtoken(const char *authUser, const char *authPassword, EVP_PKEY *pubkey,
     return 0;
 }
 #else
-
 int
 main(int argc, char **argv) {
     return 0;
 }
-
 #endif /* HAVE_SSL */

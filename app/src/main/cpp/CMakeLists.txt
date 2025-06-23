@@ -1,6 +1,9 @@
 # 📌 Minimum CMake version required
 cmake_minimum_required(VERSION 3.21)
 
+# 🧾 Define iPerf version ONCE
+set(PACKAGE_VERSION "3.19")
+
 # 📛 Project name
 project("cellularlab")
 
@@ -10,6 +13,21 @@ message(STATUS "🚀 CMake version in use: ${CMAKE_VERSION}")
 # 📂 Define source folder paths
 set(IPERF_SRC_DIR ${CMAKE_SOURCE_DIR}/iperf/iperf-3.19)
 set(JNI_SRC_FILE ${CMAKE_SOURCE_DIR}/iperf/iperf_jni.c)
+
+# 🛠️ Inject custom Android config header for iPerf
+# ➕ Generate iperf_config.h from template
+configure_file(
+        ${CMAKE_SOURCE_DIR}/iperf/iperf_config_android.h
+        ${IPERF_SRC_DIR}/iperf_config.h
+)
+
+# ➕ Generate version.h from version.h.in
+configure_file(
+        ${IPERF_SRC_DIR}/version.h.in
+        ${IPERF_SRC_DIR}/version.h
+        @ONLY
+)
+
 
 # ✅ Set C standard
 set(CMAKE_C_STANDARD 11)

@@ -35,18 +35,14 @@
 #include <inttypes.h>
 #include <sys/select.h>
 #include <sys/socket.h>
-
 #ifndef _GNU_SOURCE
 # define _GNU_SOURCE
 #endif
 #ifdef HAVE_LINUX_TCP_H
 #include <linux/tcp.h>
 #else
-
 #include <netinet/tcp.h>
-
 #endif
-
 #include <net/if.h> // for IFNAMSIZ
 
 #if defined(HAVE_CPUSET_SETAFFINITY)
@@ -269,7 +265,6 @@ struct protocol {
     int (*recv)(struct iperf_stream *);
 
     int (*init)(struct iperf_test *);
-
     SLIST_ENTRY(protocol) protocols;
 };
 
