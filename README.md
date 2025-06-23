@@ -9,6 +9,8 @@
 
 **CellularLab** is a native Android app that serves as a smart frontend for [iPerf3](https://github.com/esnet/iperf), the de facto standard for TCP/UDP performance testing. Built with `JNI` and powered by a native integration of `iperf 3`, it delivers precise, low-level control and accurate results — all from your Android device.
 
+ 
+ 
 ---
 
 ## 📦 About iPerf3
@@ -22,6 +24,9 @@ CellularLab integrates iPerf3 natively to offer these features with an Android-n
 ---
 
 ## 🔧 Project Details
+
+
+<img src="https://github.com/user-attachments/assets/264b5378-1fa7-43a3-98db-fbf13313b47f" alt="Cellular Lab logo" width="20%" height="20%"/>
 
 | Key Component | Details |
 |---------------|---------|
