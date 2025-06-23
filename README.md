@@ -106,3 +106,19 @@ You can use public iPerf3 servers listed here to test this app without setting u
 ➡️ [R0GGER/public-iperf3-servers](https://github.com/R0GGER/public-iperf3-servers)
 
 **Note**: These are community-maintained and may be unstable or offline at times.
+
+---
+
+## License
+
+This project is open source under a custom MIT-style license.  
+You are free to use, modify, and share it for personal and non-commercial purposes.
+
+❗️However, uploading this app or its modified versions to any app store (e.g., Google Play)  
+or using it commercially is **not allowed** without written permission.
+
+💡 If you build something based on this, a simple mention or link to the original repo would be appreciated:
+[https://github.com/Abhi5h3k/CellularLab](https://github.com/Abhi5h3k/CellularLab)
+
+---
+
