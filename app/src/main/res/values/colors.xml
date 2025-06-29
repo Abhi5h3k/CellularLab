@@ -1,11 +1,47 @@
+<!--
+    colors.xml
+    Defines the color palette for the app.
+    Colors are referenced in layouts, themes, and styles.
+-->
+
 <resources>
-    <color name="colorPrimary">#00E384</color> <!-- Green "Start Test" -->
-    <color name="colorPrimaryDark">#111714</color> <!-- Overall dark background -->
-    <color name="colorAccent">#1C332D</color> <!-- Input field bg -->
-    <color name="colorOnPrimary">#FFFFFF</color> <!-- Text on buttons -->
+
+    <!-- =========================
+         Primary Colors
+         Main branding and backgrounds
+    ========================== -->
+    <!-- Main app color, used for primary actions like "Start Test" button -->
+    <color name="colorPrimary">#00E384</color>
+    <!-- Darker variant for status bar or backgrounds -->
+    <color name="colorPrimaryDark">#111714</color>
+    <!-- Accent color for input field backgrounds -->
+    <color name="colorAccent">#1C332D</color>
+
+    <!-- =========================
+         On Primary Colors
+         Text/icons on primary backgrounds
+    ========================== -->
+    <!-- Text color for content on primary buttons (white) -->
+    <color name="colorOnPrimary">#FFFFFF</color>
+    <!-- Text color for content on primary buttons (dark) -->
     <color name="colorOnPrimaryBtn">#111714</color>
-    <color name="colorSecondary">#4E4E4E</color> <!-- Stop button -->
-    <color name="colorTextPrimary">#EDFFEC</color>
-    <color name="colorTextSecondary">#7A8A87</color> <!-- Hint text -->
+
+    <!-- =========================
+         Secondary & Utility Colors
+         For secondary actions and UI elements
+    ========================== -->
+    <!-- Color for secondary actions like "Stop" button -->
+    <color name="colorSecondary">#4E4E4E</color>
+    <!-- Border color for input fields or cards -->
     <color name="colorBorder">#2F4B44</color>
+
+    <!-- =========================
+         Text Colors
+         For various text elements
+    ========================== -->
+    <!-- Main text color for primary content -->
+    <color name="colorTextPrimary">#EDFFEC</color>
+    <!-- Secondary text color, e.g., hints or less prominent text -->
+    <color name="colorTextSecondary">#7A8A87</color>
+
 </resources>

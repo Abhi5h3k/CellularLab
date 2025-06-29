@@ -1,36 +1,54 @@
 <resources>
+    <!-- =========================
+         # App Theme Definition
+         ========================= -->
     <style name="Theme.CellularLab" parent="Theme.MaterialComponents.DayNight.NoActionBar">
 
-        <!-- Primary branding colors -->
+        <!-- ========== Primary Branding Colors ==========
+             Main colors for app branding and UI elements
+        -->
         <item name="colorPrimary">@color/colorPrimary</item> <!-- Green Start Test -->
         <item name="colorPrimaryVariant">@color/colorPrimaryDark</item>
         <item name="colorOnPrimary">@color/colorOnPrimary</item>
 
-        <!-- Secondary brand colors -->
+        <!-- ========== Secondary Brand Colors ==========
+             Used for accent actions and highlights
+        -->
         <item name="colorSecondary">@color/colorSecondary</item> <!-- Stop Test -->
         <item name="colorSecondaryVariant">@color/colorSecondary</item>
         <item name="colorOnSecondary">@color/colorOnPrimary</item>
 
-        <!-- Background and surface -->
+        <!-- ========== Background and Surface ==========
+             Controls background and surface colors for screens and cards
+        -->
         <item name="android:colorBackground">@color/colorPrimaryDark</item>
         <item name="colorSurface">@color/colorAccent</item>
         <item name="colorOnBackground">@color/colorTextPrimary</item>
         <item name="colorOnSurface">@color/colorTextPrimary</item>
 
-        <!-- Status bar -->
+        <!-- ========== System Bars ==========
+             Status bar and navigation bar appearance
+        -->
         <item name="android:statusBarColor">@color/colorPrimary</item>
         <item name="android:navigationBarColor">@color/colorPrimaryDark</item>
         <item name="android:windowLightStatusBar">false</item>
 
-        <!-- Text input styles -->
+        <!-- ========== Text Input Styles ==========
+             Customizes EditText appearance
+        -->
         <item name="editTextStyle">@style/Widget.App.EditText</item>
         <item name="android:editTextBackground">@drawable/edittext_bg</item>
 
-        <!-- App bar and icons -->
+        <!-- ========== App Bar and Icons ==========
+             Customizes ActionBar/Toolbar appearance
+        -->
         <item name="actionBarStyle">@style/Widget.App.ActionBar</item>
     </style>
 
-    <!-- Optional: Style for EditText to remove underline -->
+    <!-- =========================
+         # EditText Custom Style
+         ========================= -->
+    <!-- Removes underline, sets colors, and rounds corners for EditText -->
     <style name="Widget.App.EditText" parent="Widget.MaterialComponents.TextInputEditText.OutlinedBox">
         <item name="android:textColor">@color/colorTextPrimary</item>
         <item name="android:textColorHint">@color/colorTextSecondary</item>
@@ -42,20 +60,26 @@
         <item name="boxCornerRadiusBottomEnd">12dp</item>
     </style>
 
-    <!-- Optional: Action bar style -->
+    <!-- =========================
+         # ActionBar/Toolbar Style
+         ========================= -->
+    <!-- Sets ActionBar background and title text color -->
     <style name="Widget.App.ActionBar" parent="Widget.MaterialComponents.Toolbar.Primary">
         <item name="android:background">@color/colorPrimaryDark</item>
         <item name="titleTextColor">@color/colorOnPrimary</item>
     </style>
 
-    <!-- Dark‐themed PopupMenu overlay -->
+    <!-- =========================
+         # PopupMenu Overlay Style
+         ========================= -->
+    <!-- Customizes PopupMenu with dark theme and accent background -->
     <style name="CustomPopupMenu" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
-        <!-- Force white text -->
+        <!-- Force white text for menu items -->
         <item name="android:textColor">@color/colorTextPrimary</item>
+        <!-- Tint the background with accent color -->
         <item name="android:backgroundTint">@color/colorAccent</item>
-        <!--        <item name="android:background">@color/colorTextSecondary</item>-->
-        <!-- Force white icons via AppCompat attr -->
-        <!--        <item name="itemIconTint">@color/colorTextPrimary</item>-->
+        <!-- Uncomment below to set background or icon tint if needed -->
+        <!-- <item name="android:background">@color/colorTextSecondary</item> -->
+        <!-- <item name="itemIconTint">@color/colorTextPrimary</item> -->
     </style>
-
 </resources>

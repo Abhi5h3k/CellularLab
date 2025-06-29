@@ -40,14 +40,15 @@ import java.util.Locale
 
 class RunTestFragment : Fragment() {
 
-    // region JNI
+    // region JNI and Constants
     companion object {
         init {
+            // Load native library for JNI calls
             System.loadLibrary("cellularlab")
         }
 
+        // SharedPreferences keys
         private const val PREFS_NAME = "AppPreferences"
-
         private const val KEY_SERVER_IP = "serverIp"
         private const val KEY_PORT = "port"
         private const val KEY_DURATION = "duration"
@@ -59,11 +60,13 @@ class RunTestFragment : Fragment() {
         private const val KEY_VERBOSE_CHECKBOX = "verboseCheckbox"
     }
 
+    // JNI function declarations for iPerf test control
     external fun runIperfLive(arguments: Array<String>, callback: IperfCallback)
     external fun forceStopIperfTest(callback: IperfCallback)
     // endregion
 
-    // region Views
+    // region View Declarations
+    // UI elements
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var outputView: TextView
     private lateinit var scrollView: ScrollView
@@ -102,35 +105,38 @@ class RunTestFragment : Fragment() {
     private lateinit var autoReduceCheckbox: CheckBox
 
     private lateinit var versionTextView: TextView
-
     // endregion
 
     // region State & Managers
     private var isAutoScrollEnabled = true
     private lateinit var gestureDetector: GestureDetector
 
+    // Test mode flags
     private var isIncrementalRampUpTest = false
     private var isSmartIncrementalRampUpTest = false
     private var isHybridTest = false
 
+    // Timer and test management
     private var startTimeMillis: Long = 0L
     private var timerJob: Job? = null
     private var timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
     private var iperfManager: IperfTestManage? = null
     // endregion
 
-
+    // region Fragment Lifecycle
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         val view = inflater.inflate(R.layout.fragment_run_test, container, false)
 
+        // Bind all UI elements
         bindViews(view)
 
-
+        // Keep screen on during test
         requireActivity().window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
+        // Set info icon click listeners for help dialogs
         view.findViewById<View>(R.id.iconInfoIp).setOnClickListener { onInfoIconClick(it) }
         view.findViewById<View>(R.id.iconInfoPort).setOnClickListener { onInfoIconClick(it) }
         view.findViewById<View>(R.id.iconInfoProtocol).setOnClickListener { onInfoIconClick(it) }
@@ -145,19 +151,23 @@ class RunTestFragment : Fragment() {
         view.findViewById<View>(R.id.iconInfoWaitTime).setOnClickListener { onInfoIconClick(it) }
         view.findViewById<View>(R.id.iconInfoOptions).setOnClickListener { onInfoIconClick(it) }
 
+        // Setup protocol and direction spinners
         setupSpinners()
+        // Setup gesture for toggling auto-scroll
         setupGestureScrollToggle()
 
+        // Load saved preferences
         sharedPreferences = requireActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         restoreSavedValues()
 
+        // Button click listeners
         startBtn.setOnClickListener { onStartButtonClick() }
         stopBtn.setOnClickListener {
             iperfManager?.stopTests()
             resetTestUI()
         }
 
-        // ✅ Delay guide until layout is done
+        // Show intro guide on first launch
         if (isFirstLaunch()) {
             requireActivity().window.decorView.post {
                 showIntroGuide()
@@ -170,10 +180,15 @@ class RunTestFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+        // Ensure layout is refreshed
         view?.requestLayout()
     }
+    // endregion
 
     // region UI Setup
+    /**
+     * Binds all view elements from the layout to properties.
+     */
     private fun bindViews(view: View) {
         outputView = view.findViewById(R.id.textOutput)
         scrollView = view.findViewById(R.id.scrollView)
@@ -197,7 +212,6 @@ class RunTestFragment : Fragment() {
         hostLayout = view.findViewById(R.id.hostLayout)
         titleBasicSettings = view.findViewById(R.id.titleBasicSettings)
 
-
         spinnerProtocol = view.findViewById(R.id.spinnerProtocol)
         testDirection = view.findViewById(R.id.testDirection)
 
@@ -214,7 +228,11 @@ class RunTestFragment : Fragment() {
         autoReduceCheckbox = view.findViewById(R.id.autoReduceBandwidth)
     }
 
+    /**
+     * Sets up protocol and test direction spinners with listeners.
+     */
     private fun setupSpinners() {
+        // Protocol spinner
         ArrayAdapter.createFromResource(
             requireContext(), R.array.protocol_options, R.layout.spinner_item_white
         ).also { adapter ->
@@ -227,6 +245,7 @@ class RunTestFragment : Fragment() {
             override fun onItemSelected(
                 parent: AdapterView<*>, view: View?, position: Int, id: Long
             ) {
+                // Show/hide bandwidth options based on protocol
                 val show = position != 0 && position != 3
                 bwLayout.visibility = if (show) View.VISIBLE else View.GONE
                 autoReduceCheckbox.visibility = if (show) View.VISIBLE else View.GONE
@@ -235,6 +254,7 @@ class RunTestFragment : Fragment() {
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
 
+        // Test direction spinner
         ArrayAdapter.createFromResource(
             requireContext(), R.array.test_direction_options, R.layout.spinner_item_white
         ).also { adapter ->
@@ -244,6 +264,9 @@ class RunTestFragment : Fragment() {
         testDirection.setSelection(0)
     }
 
+    /**
+     * Enables double-tap gesture on the output scroll view to toggle auto-scroll.
+     */
     private fun setupGestureScrollToggle() {
         gestureDetector =
             GestureDetector(requireContext(), object : GestureDetector.SimpleOnGestureListener() {
@@ -264,7 +287,11 @@ class RunTestFragment : Fragment() {
     // endregion
 
     // region Test Flow
+    /**
+     * Handles the start button click: validates input, builds arguments, and starts the test.
+     */
     private fun onStartButtonClick() {
+        // If test is finished, reset UI for new test
         if (startBtn.text.toString() == "New Test") {
             startBtn.text = "START TEST"
             resetTestUI()
@@ -281,26 +308,15 @@ class RunTestFragment : Fragment() {
         stopBtn.isEnabled = true
         stopBtn.visibility = View.VISIBLE
 
+        // Show output, hide options
+        listOf(outputLabel, outputLayout).forEach { it.visibility = View.VISIBLE }
         listOf(
-            outputLabel, outputLayout
-        ).forEach { it.visibility = View.VISIBLE }
-
-        listOf(
-            optionsLayout,
-            wtLayout,
-            iterationLayout,
-            titleAdvancedSettings,
-            tdLayout,
-            intervalLayout,
-            psLayout,
-            bwLayout,
-            protocolLayout,
-            durationLayout,
-            portLayout,
-            hostLayout,
-            titleBasicSettings
+            optionsLayout, wtLayout, iterationLayout, titleAdvancedSettings, tdLayout,
+            intervalLayout, psLayout, bwLayout, protocolLayout, durationLayout,
+            portLayout, hostLayout, titleBasicSettings
         ).forEach { it.visibility = View.GONE }
 
+        // Initialize and start iPerf test manager
         iperfManager = IperfTestManage(
             context = requireContext(),
             startBtn = startBtn,
@@ -317,7 +333,8 @@ class RunTestFragment : Fragment() {
                 stopBtn.isEnabled = false
                 stopBtn.visibility = View.GONE
             },
-            isAutoReduceEnabled = { autoReduceCheckbox.isChecked })
+            isAutoReduceEnabled = { autoReduceCheckbox.isChecked }
+        )
 
         val iterations = testIterations.text.toString().toIntOrNull() ?: 1
         val waitTime = iterationWaitTime.text.toString().toIntOrNull() ?: 15
@@ -332,29 +349,25 @@ class RunTestFragment : Fragment() {
         )
     }
 
+    /**
+     * Resets the UI to its initial state for a new test.
+     */
     private fun resetTestUI() {
         outputLabel.visibility = View.GONE
         outputLayout.visibility = View.GONE
 
         listOf(
-            optionsLayout,
-            wtLayout,
-            iterationLayout,
-            titleAdvancedSettings,
-            tdLayout,
-            intervalLayout,
-            psLayout,
-            bwLayout,
-            protocolLayout,
-            durationLayout,
-            portLayout,
-            hostLayout,
-            titleBasicSettings,
+            optionsLayout, wtLayout, iterationLayout, titleAdvancedSettings, tdLayout,
+            intervalLayout, psLayout, bwLayout, protocolLayout, durationLayout,
+            portLayout, hostLayout, titleBasicSettings
         ).forEach { it.visibility = View.VISIBLE }
     }
     // endregion
 
     // region Timer
+    /**
+     * Starts a coroutine timer to update elapsed time during the test.
+     */
     private fun startTimer() {
         startTimeMillis = System.currentTimeMillis()
         timerJob = CoroutineScope(Dispatchers.Main).launch {
@@ -373,12 +386,19 @@ class RunTestFragment : Fragment() {
         }
     }
 
+    /**
+     * Stops the timer coroutine.
+     */
     private fun stopTimer() {
         timerJob?.cancel()
     }
     // endregion
 
     // region Argument Builder
+    /**
+     * Builds the iPerf command-line arguments from user input.
+     * Returns null and shows a Toast if validation fails.
+     */
     private fun getIperfArguments(): Array<String>? {
         val serverIp = inputServerIp.text.toString().trim()
         val port = inputPort.text.toString().toIntOrNull()
@@ -391,37 +411,32 @@ class RunTestFragment : Fragment() {
         val isDebug = checkboxDebug.isChecked
         val isVerbose = checkboxVerbose.isChecked
 
+        // Validate required fields
         if (serverIp.isEmpty() || port == null || duration == null || interval == null) {
             Toast.makeText(
                 requireContext(),
                 "Please fill all required fields correctly.",
                 Toast.LENGTH_SHORT
-            )
-                .show()
+            ).show()
             return null
         }
 
         val args = mutableListOf(
-            "iperf3",
-            "-c",
-            serverIp,
-            "-p",
-            port.toString(),
-            "-t",
-            duration.toString(),
-            "-i",
-            interval.toString()
+            "iperf3", "-c", serverIp, "-p", port.toString(),
+            "-t", duration.toString(), "-i", interval.toString()
         )
 
         if (parallel != null) {
             args.addAll(listOf("-P", parallel.toString()))
         }
 
+        // Add direction flags
         when (testDirection) {
             "Download (-R)" -> args.add("-R")
             "Bidirectional (--bidir)" -> args.add("--bidir")
         }
 
+        // Add protocol-specific flags
         when (protocol) {
             "UDP", "UDP Incremental Ramp-Up Test", "Smart Ramp-Up Strategy" -> {
                 if (bandwidth == null) {
@@ -433,7 +448,6 @@ class RunTestFragment : Fragment() {
                     return null
                 }
                 args.addAll(listOf("-u", "-b", "${bandwidth}M"))
-
                 isIncrementalRampUpTest = protocol.contains("Incremental")
                 isSmartIncrementalRampUpTest = protocol.contains("Smart")
             }
@@ -449,6 +463,9 @@ class RunTestFragment : Fragment() {
     // endregion
 
     // region Preferences
+    /**
+     * Saves current input values to SharedPreferences.
+     */
     private fun saveCurrentValues() {
         with(sharedPreferences.edit()) {
             putString(KEY_SERVER_IP, inputServerIp.text.toString())
@@ -464,6 +481,9 @@ class RunTestFragment : Fragment() {
         }
     }
 
+    /**
+     * Restores saved input values from SharedPreferences.
+     */
     private fun restoreSavedValues() {
         inputServerIp.setText(sharedPreferences.getString(KEY_SERVER_IP, ""))
         inputPort.setText(sharedPreferences.getString(KEY_PORT, "5202"))
@@ -478,6 +498,9 @@ class RunTestFragment : Fragment() {
     // endregion
 
     // region Info Dialogs
+    /**
+     * Shows an info dialog with help text for the given field.
+     */
     fun onInfoIconClick(view: View) {
         val message = when (view.id) {
             R.id.iconInfoIp -> getString(R.string.info_ip)
@@ -501,20 +524,27 @@ class RunTestFragment : Fragment() {
     // endregion
 
     // region First Launch Logic
+    /**
+     * Checks if this is the first launch of the app.
+     */
     private fun isFirstLaunch(): Boolean {
         val prefs = requireActivity().getSharedPreferences("cellularlab_prefs", MODE_PRIVATE)
         return prefs.getBoolean("first_launch", true)
     }
 
+    /**
+     * Marks that the first launch guide has been shown.
+     */
     private fun markFirstLaunchComplete() {
         val prefs = requireActivity().getSharedPreferences("cellularlab_prefs", MODE_PRIVATE)
         prefs.edit().putBoolean("first_launch", false).apply()
     }
 
-
+    /**
+     * Shows an interactive intro guide using TapTargetView.
+     */
     fun showIntroGuide() {
         versionTextView = requireActivity().findViewById(R.id.appVersionText)
-        // Delay execution until the view is fully laid out
         requireActivity().window.decorView.post {
             val sequence = TapTargetSequence(requireActivity())
                 .targets(
@@ -543,12 +573,13 @@ class RunTestFragment : Fragment() {
                     override fun onSequenceStep(lastTarget: TapTarget, targetClicked: Boolean) {}
                     override fun onSequenceCanceled(lastTarget: TapTarget?) {}
                 })
-
             sequence.start()
         }
     }
 
-
+    /**
+     * Helper to create a themed TapTarget for the intro guide.
+     */
     fun themedTarget(
         view: View,
         title: String,
@@ -566,12 +597,7 @@ class RunTestFragment : Fragment() {
             .transparentTarget(true)
             .drawShadow(true)
             .id(id)
-            .targetRadius(radius) // 👈 This increases tap region
-        //.cancelable(false) // ❌ Commented out so tapping outside cancels
+            .targetRadius(radius)
     }
-
-
     // endregion
-
-
 }

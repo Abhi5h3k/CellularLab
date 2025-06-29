@@ -20,21 +20,27 @@ import kotlinx.coroutines.withContext
 import java.io.File
 
 class ResultHistoryFragment : Fragment() {
+    //region Variables
+
+    // Adapter for displaying log history in RecyclerView
     private lateinit var adapter: HistoryAdapter
 
+    //endregion
+
+    //region Fragment Lifecycle
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_result_history, container, false)
 
-
-
-
+        // Load log entries asynchronously and set up RecyclerView
         lifecycleScope.launch(Dispatchers.IO) {
             val logEntries = loadLogEntries()
             withContext(Dispatchers.Main) {
+                // Initialize adapter with log entries and action handlers
                 adapter = HistoryAdapter(logEntries.toMutableList(), ::shareLogFile, ::openLogFile)
                 val recyclerView = view.findViewById<RecyclerView>(R.id.historyRecyclerView)
                 recyclerView.layoutManager = LinearLayoutManager(requireContext())
@@ -45,6 +51,14 @@ class ResultHistoryFragment : Fragment() {
         return view
     }
 
+    //endregion
+
+    //region Log Loading and Parsing
+
+    /**
+     * Loads log files from the app's external downloads directory,
+     * sorts them by last modified date (descending), and parses details.
+     */
     private fun loadLogEntries(): List<LogEntry> {
         val dir = requireContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
         val logFiles = dir?.listFiles()?.sortedByDescending { it.lastModified() } ?: emptyList()
@@ -55,10 +69,17 @@ class ResultHistoryFragment : Fragment() {
         }
     }
 
+    /**
+     * Parses a log file to extract:
+     * - Timestamp from filename
+     * - IP address from file content
+     * - Test success ratio and status icon
+     */
     private fun parseLogDetails(file: File): LogEntry {
         val name = file.name
         val timestampRegex = Regex("iPerf3_(\\d{8})_(\\d{4})")
 
+        // Extract timestamp from filename
         val timestamp = timestampRegex.find(name)?.let {
             val (date, time) = it.destructured
             val formattedDate =
@@ -69,11 +90,13 @@ class ResultHistoryFragment : Fragment() {
 
         val contentLines = file.readLines()
 
+        // Extract IP address from log content
         val ip = contentLines.find { it.contains("Connecting to host") }
             ?.substringAfter("host")
             ?.substringBefore(",")
             ?.trim() ?: "Unknown IP"
 
+        // Extract total iterations from log content
         val totalIterations = contentLines.find { it.contains("Starting iPerf3 Test") }
             ?.substringAfter("Test")
             ?.substringAfter("/")
@@ -81,6 +104,7 @@ class ResultHistoryFragment : Fragment() {
             ?.trim()
             ?.toIntOrNull() ?: 1
 
+        // Count successful test completions
         val successCount = contentLines.count { it.contains("iperf Done.") }
 
         val ratioText = "$successCount / $totalIterations"
@@ -95,7 +119,13 @@ class ResultHistoryFragment : Fragment() {
         return LogEntry(file, timestamp, ip, ratioText, icon)
     }
 
+    //endregion
 
+    //region File Actions
+
+    /**
+     * Shares the given log file using Android's share intent.
+     */
     private fun shareLogFile(file: File) {
         val uri = FileProvider.getUriForFile(
             requireContext(),
@@ -110,6 +140,9 @@ class ResultHistoryFragment : Fragment() {
         startActivity(Intent.createChooser(intent, "Share Log File"))
     }
 
+    /**
+     * Opens the given log file in a compatible viewer app.
+     */
     private fun openLogFile(file: File) {
         val uri = FileProvider.getUriForFile(
             requireContext(),
@@ -123,5 +156,5 @@ class ResultHistoryFragment : Fragment() {
         startActivity(intent)
     }
 
-
+    //endregion
 }
