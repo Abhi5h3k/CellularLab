@@ -35,7 +35,7 @@ class ResultHistoryFragment : Fragment() {
         lifecycleScope.launch(Dispatchers.IO) {
             val logEntries = loadLogEntries()
             withContext(Dispatchers.Main) {
-                adapter = HistoryAdapter(logEntries, ::shareLogFile, ::openLogFile)
+                adapter = HistoryAdapter(logEntries.toMutableList(), ::shareLogFile, ::openLogFile)
                 val recyclerView = view.findViewById<RecyclerView>(R.id.historyRecyclerView)
                 recyclerView.layoutManager = LinearLayoutManager(requireContext())
                 recyclerView.adapter = adapter

@@ -40,7 +40,7 @@ class MainActivity : AppCompatActivity() {
             tab.text = when (position) {
                 0 -> "Run Test"
                 1 -> "History"
-                2 -> "Saved"
+//                2 -> "Test Profiles"
                 else -> ""
             }
         }.attach()
