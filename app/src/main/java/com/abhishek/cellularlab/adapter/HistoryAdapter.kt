@@ -18,11 +18,15 @@ import java.io.File
 /**
  * RecyclerView Adapter for displaying a list of LogEntry items.
  * Handles item clicks, sharing, and deletion.
+ *
+ * @param logs Mutable list of log entries to display.
+ * @param onShare Callback invoked when a log file is to be shared.
+ * @param onOpen Callback invoked when a log file is to be opened.
  */
 class HistoryAdapter(
     private val logs: MutableList<LogEntry>,
-    private val onShare: (File) -> Unit, // Callback for sharing a log file
-    private val onOpen: (File) -> Unit   // Callback for opening a log file
+    private val onShare: (File) -> Unit,
+    private val onOpen: (File) -> Unit
 ) : RecyclerView.Adapter<HistoryAdapter.LogViewHolder>() {
 
     //region ViewHolder
@@ -31,11 +35,25 @@ class HistoryAdapter(
      * Holds references to the views for each data item.
      */
     inner class LogViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val timestamp = view.findViewById<TextView>(R.id.resultTimestamp)
-        val ip = view.findViewById<TextView>(R.id.resultIp)
-        val resultSummary = view.findViewById<TextView>(R.id.resultSummary)
-        val resultIcon = view.findViewById<TextView>(R.id.resultIcon)
-        val btnMore = view.findViewById<ImageView>(R.id.btnMore)
+        val timestamp: TextView = view.findViewById(R.id.resultTimestamp)
+        val ip: TextView = view.findViewById(R.id.resultIp)
+        val resultSummary: TextView = view.findViewById(R.id.resultSummary)
+        val resultIcon: TextView = view.findViewById(R.id.resultIcon)
+        val btnMore: ImageView = view.findViewById(R.id.btnMore)
+    }
+    //endregion
+
+    //region Data Update
+    /**
+     * Updates the adapter's data set with new log entries.
+     * Clears the current list and adds all new entries, then refreshes the view.
+     *
+     * @param newEntries List of new LogEntry objects.
+     */
+    fun updateData(newEntries: List<LogEntry>) {
+        logs.clear()
+        logs.addAll(newEntries)
+        notifyDataSetChanged()
     }
     //endregion
 
@@ -43,6 +61,10 @@ class HistoryAdapter(
 
     /**
      * Inflates the item layout and creates a ViewHolder.
+     *
+     * @param parent The parent ViewGroup.
+     * @param viewType The type of the new view.
+     * @return A new LogViewHolder instance.
      */
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LogViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -53,6 +75,9 @@ class HistoryAdapter(
     /**
      * Binds data to the ViewHolder at the given position.
      * Sets up click listeners for item and menu actions.
+     *
+     * @param holder The ViewHolder to bind data to.
+     * @param position The position of the item in the data set.
      */
     override fun onBindViewHolder(holder: LogViewHolder, position: Int) {
         val entry = logs[position]
@@ -63,10 +88,10 @@ class HistoryAdapter(
         holder.resultSummary.text = entry.summaryText
         holder.resultIcon.text = entry.icon
 
-        // Handle item click (open log)
+        // Handle item click: open the log file
         holder.itemView.setOnClickListener { onOpen(entry.file) }
 
-        // Handle "more" button click (show popup menu)
+        // Handle "more" button click: show popup menu with actions
         holder.btnMore.setOnClickListener { anchor ->
             // Use a themed context for the popup menu
             val themedCtx = ContextThemeWrapper(anchor.context, R.style.CustomPopupMenu)
@@ -127,9 +152,20 @@ class HistoryAdapter(
 
     /**
      * Returns the total number of log entries.
+     *
+     * @return The size of the logs list.
      */
     override fun getItemCount() = logs.size
 
     //endregion
 }
 //endregion
+
+/*
+Explanation:
+- The adapter manages a list of log entries and binds them to a RecyclerView.
+- Each item shows log details and a "more" button for actions (open, share, delete).
+- Deletion is confirmed with a dialog and updates the list on success.
+- Reflection is used to force icons in the popup menu due to Android limitations.
+- Regions and comments are added for clarity and maintainability.
+*/

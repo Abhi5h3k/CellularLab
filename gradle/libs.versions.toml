@@ -8,7 +8,8 @@ espressoCore = "3.6.1"
 appcompat = "1.7.1"
 material = "1.12.0"
 constraintlayout = "2.2.1"
-recyclerview = "1.4.0"  # latest stable as of now
+recyclerview = "1.4.0"
+swiperefreshlayout = "1.1.0"  # latest stable as of now
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -20,6 +21,7 @@ material = { group = "com.google.android.material", name = "material", version.r
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 taptargetview = { module = "com.getkeepsafe.taptargetview:taptargetview", version = "1.13.3" }
 androidx-recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }
+androidx-swiperefreshlayout = { group = "androidx.swiperefreshlayout", name = "swiperefreshlayout", version.ref = "swiperefreshlayout" }
 
 
 [plugins]

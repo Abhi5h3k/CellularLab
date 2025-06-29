@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.abhishek.cellularlab.R
 import com.abhishek.cellularlab.adapter.HistoryAdapter
 import com.abhishek.cellularlab.model.LogEntry
@@ -19,11 +20,25 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 
+/**
+ * Fragment to display and manage the history of iPerf3 test result logs.
+ * Handles loading, parsing, displaying, sharing, and opening log files.
+ */
 class ResultHistoryFragment : Fragment() {
+
     //region Variables
 
-    // Adapter for displaying log history in RecyclerView
+    /** Adapter for displaying log history in RecyclerView */
     private lateinit var adapter: HistoryAdapter
+
+    /** Tracks last known log file count to detect changes */
+    private var lastLogFileCount = 0
+
+    /** Tracks last known modification time to detect changes */
+    private var lastLogFileModified = 0L
+
+    /** Swipe-to-refresh layout for manual refresh */
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
 
     //endregion
 
@@ -36,19 +51,43 @@ class ResultHistoryFragment : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_result_history, container, false)
 
-        // Load log entries asynchronously and set up RecyclerView
-        lifecycleScope.launch(Dispatchers.IO) {
-            val logEntries = loadLogEntries()
-            withContext(Dispatchers.Main) {
-                // Initialize adapter with log entries and action handlers
-                adapter = HistoryAdapter(logEntries.toMutableList(), ::shareLogFile, ::openLogFile)
-                val recyclerView = view.findViewById<RecyclerView>(R.id.historyRecyclerView)
-                recyclerView.layoutManager = LinearLayoutManager(requireContext())
-                recyclerView.adapter = adapter
-            }
+        // Initialize swipe-to-refresh and set refresh listener
+        swipeRefreshLayout = view.findViewById<SwipeRefreshLayout>(R.id.swipeRefreshLayout)
+        swipeRefreshLayout.setOnRefreshListener {
+            refreshLogEntries()
         }
 
         return view
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Refresh logs if there are changes since last load
+        if (shouldRefreshLogs()) {
+            refreshLogEntries()
+        }
+    }
+
+    //endregion
+
+    //region Log Change Detection
+
+    /**
+     * Checks if the log files have changed (count or last modified).
+     * Updates internal state if changes are detected.
+     * @return true if logs should be refreshed, false otherwise
+     */
+    private fun shouldRefreshLogs(): Boolean {
+        val dir = requireContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
+        val logFiles = dir?.listFiles() ?: emptyArray()
+        val count = logFiles.size
+        val lastModified = logFiles.maxOfOrNull { it.lastModified() } ?: 0L
+        val changed = count != lastLogFileCount || lastModified != lastLogFileModified
+        if (changed) {
+            lastLogFileCount = count
+            lastLogFileModified = lastModified
+        }
+        return changed
     }
 
     //endregion
@@ -56,8 +95,36 @@ class ResultHistoryFragment : Fragment() {
     //region Log Loading and Parsing
 
     /**
-     * Loads log files from the app's external downloads directory,
-     * sorts them by last modified date (descending), and parses details.
+     * Loads log files asynchronously, parses them, and updates the RecyclerView.
+     * Uses coroutines to avoid blocking the UI thread.
+     */
+    private fun refreshLogEntries() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            val logEntries = loadLogEntries()
+            withContext(Dispatchers.Main) {
+                if (!::adapter.isInitialized) {
+                    // Initialize adapter and RecyclerView on first load
+                    adapter = HistoryAdapter(
+                        logEntries.toMutableList(),
+                        ::shareLogFile,
+                        ::openLogFile
+                    )
+                    view?.findViewById<RecyclerView>(R.id.historyRecyclerView)?.apply {
+                        layoutManager = LinearLayoutManager(requireContext())
+                        adapter = this@ResultHistoryFragment.adapter
+                    }
+                } else {
+                    // Update adapter data on subsequent loads
+                    adapter.updateData(logEntries)
+                }
+                swipeRefreshLayout.isRefreshing = false
+            }
+        }
+    }
+
+    /**
+     * Loads and parses all log files from the app's external downloads directory.
+     * @return List of parsed LogEntry objects, sorted by last modified date (descending)
      */
     private fun loadLogEntries(): List<LogEntry> {
         val dir = requireContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
@@ -70,16 +137,18 @@ class ResultHistoryFragment : Fragment() {
     }
 
     /**
-     * Parses a log file to extract:
+     * Parses a single log file to extract:
      * - Timestamp from filename
      * - IP address from file content
      * - Test success ratio and status icon
+     * @param file Log file to parse
+     * @return LogEntry with extracted details
      */
     private fun parseLogDetails(file: File): LogEntry {
         val name = file.name
         val timestampRegex = Regex("iPerf3_(\\d{8})_(\\d{4})")
 
-        // Extract timestamp from filename
+        // Extract timestamp from filename (format: iPerf3_YYYYMMDD_HHMM)
         val timestamp = timestampRegex.find(name)?.let {
             val (date, time) = it.destructured
             val formattedDate =
@@ -96,7 +165,7 @@ class ResultHistoryFragment : Fragment() {
             ?.substringBefore(",")
             ?.trim() ?: "Unknown IP"
 
-        // Extract total iterations from log content
+        // Extract total iterations from log content (default to 1 if not found)
         val totalIterations = contentLines.find { it.contains("Starting iPerf3 Test") }
             ?.substringAfter("Test")
             ?.substringAfter("/")
@@ -125,6 +194,8 @@ class ResultHistoryFragment : Fragment() {
 
     /**
      * Shares the given log file using Android's share intent.
+     * Uses FileProvider for secure file sharing.
+     * @param file Log file to share
      */
     private fun shareLogFile(file: File) {
         val uri = FileProvider.getUriForFile(
@@ -142,6 +213,8 @@ class ResultHistoryFragment : Fragment() {
 
     /**
      * Opens the given log file in a compatible viewer app.
+     * Uses FileProvider for secure file access.
+     * @param file Log file to open
      */
     private fun openLogFile(file: File) {
         val uri = FileProvider.getUriForFile(
