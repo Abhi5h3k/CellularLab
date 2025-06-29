@@ -54,7 +54,7 @@ void *readerThreadFunc(void *args_ptr) {
 
 // Forcefully stop a running iperf test
 JNIEXPORT void JNICALL
-Java_com_abhishek_cellularlab_MainActivity_forceStopIperfTest(JNIEnv *env, jobject thiz,
+Java_com_abhishek_cellularlab_ui_RunTestFragment_forceStopIperfTest(JNIEnv *env, jobject thiz,
                                                               jobject callback) {
     jclass callbackClass = (*env)->GetObjectClass(env, callback);
     jmethodID onOutput = (*env)->GetMethodID(env, callbackClass, "onOutput",
@@ -79,7 +79,7 @@ Java_com_abhishek_cellularlab_MainActivity_forceStopIperfTest(JNIEnv *env, jobje
 
 // Main iperf JNI entrypoint: runs iperf3 test and sends output to callback
 JNIEXPORT void JNICALL
-Java_com_abhishek_cellularlab_MainActivity_runIperfLive(JNIEnv *env, jobject thiz,
+Java_com_abhishek_cellularlab_ui_RunTestFragment_runIperfLive(JNIEnv *env, jobject thiz,
                                                         jobjectArray arguments, jobject callback) {
 
     jclass callbackClass = (*env)->GetObjectClass(env, callback);

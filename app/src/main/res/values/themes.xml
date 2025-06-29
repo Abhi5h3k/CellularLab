@@ -1,5 +1,6 @@
 <resources>
     <style name="Theme.CellularLab" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+
         <!-- Primary branding colors -->
         <item name="colorPrimary">@color/colorPrimary</item> <!-- Green Start Test -->
         <item name="colorPrimaryVariant">@color/colorPrimaryDark</item>
@@ -17,7 +18,7 @@
         <item name="colorOnSurface">@color/colorTextPrimary</item>
 
         <!-- Status bar -->
-        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <item name="android:statusBarColor">@color/colorPrimary</item>
         <item name="android:navigationBarColor">@color/colorPrimaryDark</item>
         <item name="android:windowLightStatusBar">false</item>
 
@@ -46,4 +47,15 @@
         <item name="android:background">@color/colorPrimaryDark</item>
         <item name="titleTextColor">@color/colorOnPrimary</item>
     </style>
+
+    <!-- Dark‐themed PopupMenu overlay -->
+    <style name="CustomPopupMenu" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <!-- Force white text -->
+        <item name="android:textColor">@color/colorTextPrimary</item>
+        <item name="android:backgroundTint">@color/colorAccent</item>
+        <!--        <item name="android:background">@color/colorTextSecondary</item>-->
+        <!-- Force white icons via AppCompat attr -->
+        <!--        <item name="itemIconTint">@color/colorTextPrimary</item>-->
+    </style>
+
 </resources>

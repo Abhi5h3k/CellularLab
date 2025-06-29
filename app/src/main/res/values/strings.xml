@@ -47,5 +47,6 @@
     </string>
 
     <string name="info_default">No information available.</string>
+    <string name="tab_layout_content_description">Tab Layout</string>
 
 </resources>
