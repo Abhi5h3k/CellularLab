@@ -128,6 +128,7 @@ class RunTestFragment : Fragment() {
 
         bindViews(view)
 
+
         requireActivity().window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
         view.findViewById<View>(R.id.iconInfoIp).setOnClickListener { onInfoIconClick(it) }
@@ -165,6 +166,11 @@ class RunTestFragment : Fragment() {
         }
 
         return view
+    }
+
+    override fun onResume() {
+        super.onResume()
+        view?.requestLayout()
     }
 
     // region UI Setup
