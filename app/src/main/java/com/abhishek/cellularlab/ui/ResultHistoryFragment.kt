@@ -174,7 +174,7 @@ class ResultHistoryFragment : Fragment() {
             ?.toIntOrNull() ?: 1
 
         // Count successful test completions
-        val successCount = contentLines.count { it.contains("iperf Done.") }
+        val successCount = contentLines.count { it.contains("📊 iperf Done.") }
 
         val ratioText = "$successCount / $totalIterations"
 

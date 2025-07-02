@@ -8,7 +8,7 @@ plugins {
 
 android {
     namespace = "com.abhishek.cellularlab"
-    compileSdk = 35
+    compileSdk = 36
     ndkVersion = "28.1.13356709"
 
     defaultConfig {
@@ -16,7 +16,7 @@ android {
         minSdk = 24
         targetSdk = 35
         versionCode = 1
-        versionName = "1.7"
+        versionName = "1.8"
         buildToolsVersion = "36.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

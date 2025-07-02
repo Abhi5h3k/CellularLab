@@ -147,12 +147,12 @@ class IperfTestManage(
 
                 // region Watchdog Launch
                 watchdogJob = launch(Dispatchers.IO + handler) {
-                    append("\n\n🐶 Watchdog launched – I'll jump in if things hang! 🚨")
+                    append("\n\n🐶 Watchdog launched – I'll jump in if things hang! 🚨\n")
                     delay(totalTimeout)
                     if (!testCompleted.isCompleted) {
                         append("⏰ Watchdog: Forcing test to abort after timeout.")
                         forceStopIperfTest(createIperfCallback(onLine = { line ->
-                            append("📊 $line")
+                            append("➡ $line")
                             if (isSmartIncrementalRampUpTest) {
                                 parseThroughputMbps(line)?.let {
                                     if (it > maxAchievedThisRun) maxAchievedThisRun = it
@@ -303,13 +303,19 @@ class IperfTestManage(
 
     private fun updateBandwidth(args: Array<String>, newBandwidth: Int): Array<String> {
         val bIndex = args.indexOf("-b")
-        return if (bIndex != -1 && bIndex + 1 < args.size) {
+        val updatedArgs = if (bIndex != -1 && bIndex + 1 < args.size) {
             args.toMutableList().apply {
                 this[bIndex + 1] = "${newBandwidth}M"
-            }.toTypedArray()
+            }
         } else {
-            args
-        }
+            args.toMutableList().apply {
+                add("-b")
+                add("${newBandwidth}M")
+            }
+        }.toTypedArray()
+
+        println("Updated args: ${updatedArgs.joinToString(" ")}")
+        return updatedArgs
     }
 
     private fun evaluateBandwidthRampUp(
@@ -353,7 +359,7 @@ class IperfTestManage(
 
             if (removedFlags.isNotEmpty()) {
                 append(
-                    "⚙️ [TCP Bidir Prep] Removed incompatible flags: ${
+                    "\n⚙️ [TCP Bidir Prep] Removed incompatible flags: ${
                         removedFlags.joinToString(
                             ", "
                         )
@@ -361,7 +367,13 @@ class IperfTestManage(
                 )
             }
 
-            append("🔧 [TCP Bidir Prep] Temporary command for bandwidth estimation:\n${joinToString(" ")}")
+            append(
+                "\n🔧 [TCP Bidir Prep] Temporary command for bandwidth estimation:\n\n${
+                    joinToString(
+                        " "
+                    )
+                }\n"
+            )
         }
 
         var maxBandwidthMbps = 0
@@ -373,13 +385,14 @@ class IperfTestManage(
                 parseThroughputMbps(line)?.let {
                     if (it > maxBandwidthMbps) maxBandwidthMbps = it
                 }
+                append("🧪 $line")
             },
             onError = {
                 append("❌ TCP error: $it")
                 completed.complete(Unit)
             },
             onComplete = {
-                append("✅ TCP bidir test complete.")
+                append("✅ TCP bidir test complete.\n")
                 completed.complete(Unit)
             }
         ))
