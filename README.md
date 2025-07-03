@@ -35,6 +35,38 @@ With JNI bindings to native iPerf3, it offers low-level control, intelligent tes
 
 ---
 
+## 🔧 NEW: Command Mode (v1.9)
+
+Take full control of your testing with **Command Mode** — execute custom iPerf3 commands directly:
+
+- 💻 Enter any `iperf3` command (e.g. `-c 10.0.0.1 -u -b 10M`)
+- 🎯 Perfect for advanced users needing custom bandwidth, interval, protocol
+- 📊 Full live output visible and saved like regular tests
+
+<img src="https://github.com/user-attachments/assets/6213e256-9d87-4c6b-97c4-a08dea238d1d" alt="Command Mode" width="90%" />
+
+---
+
+## 🤖 NEW: Gemini AI Analysis (v2.0)
+
+Let your assistant do the heavy lifting!
+
+- ✨ Tap "AI Analyze" on any log from **History**
+- 📑 Generates a structured **markdown report**:
+  - Summary of the test
+  - Performance issues (packet loss, jitter, etc.)
+  - Recommendations
+  - Quality rating (Excellent/Good/Fair/Poor)
+- 🪄 Clean, formatted output with headlines, bolds, bullet points
+- ⚡ Powered by **Google Gemini Flash**  
+- 🔒 Safe — your API key is stored in `local.properties` and not committed
+
+> Great for reports, debugging, and sharing with your network team.
+
+<img src="https://github.com/user-attachments/assets/d35b6a2b-75f8-43f2-97e3-2102e740fee2" alt="Gemini AI" width="50%" height="50%"/>
+
+---
+
 ## 🧠 Smart Test Strategies
 
 <img src="https://github.com/user-attachments/assets/5dbbfb7f-d833-40dd-9bd5-ac357f308844" alt="Strategy" width="50%" height="50%"/>
@@ -69,8 +101,7 @@ These are ideal for **automated testing environments** or **dynamic network anal
 - 🧲 Double-tap log view to toggle auto-scroll
 - 📤 Share logs via Mail, WhatsApp, Drive, etc.
 - 📄 Clean formatting for easy analysis
-
-<img src="https://github.com/user-attachments/assets/2db46025-3daf-4746-9ecc-98a1875ba07a" alt="Output Dir" width="400" height="800"/>
+- 🤖 AI analysis (v2.0) now supported for detailed summaries!
 
 ---
 
@@ -114,8 +145,17 @@ See previous results with clear pass/fail indicators:
 You can:
 - Tap to open logs
 - Share or delete from the UI
+- ✨ Analyze with Gemini AI
 
 <img src="https://github.com/user-attachments/assets/9a7efe04-5265-4828-81a0-e15cab9e188a" alt="Result History" width="30%" height="30%"/>
+
+---
+
+### 4. 🤖 AI Assistant
+
+✨ Tap "AI Analyze" on any log from **History**
+
+<img src="https://github.com/user-attachments/assets/3c130e74-744f-4af6-98b3-b7f158b7b68e" alt="Gemini AI"   />
 
 ---
 
@@ -151,5 +191,3 @@ This project is open-source under a **custom MIT-style license**:
 If you build on this, please give credit with a link to the original repo:
 
 🔗 [https://github.com/Abhi5h3k/CellularLab](https://github.com/Abhi5h3k/CellularLab)
-
----
