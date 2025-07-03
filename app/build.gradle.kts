@@ -1,10 +1,18 @@
 import java.util.Properties
 
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
 }
+
+
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localProperties.load(localPropertiesFile.inputStream())
+}
+val geminiApiKey = localProperties.getProperty("GEMINI_API_KEY") ?: ""
+
 
 android {
     namespace = "com.abhishek.cellularlab"
@@ -16,8 +24,10 @@ android {
         minSdk = 24
         targetSdk = 35
         versionCode = 1
-        versionName = "1.9"
+        versionName = "2.0"
         buildToolsVersion = "36.0.0"
+
+        buildConfigField("String", "GEMINI_API_KEY", "\"${geminiApiKey}\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -77,6 +87,7 @@ android {
     }
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 }
 
@@ -92,5 +103,12 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     implementation(libs.androidx.recyclerview)
     implementation(libs.taptargetview)
+    implementation(libs.okhttp)
 
+    implementation(libs.markwon)
+    implementation(libs.markwon.html)
+    implementation(libs.markwon.table)
+    implementation(libs.markwon.strikethrough)
+    implementation(libs.markwon.tasklist)
+    implementation(libs.markwon.linkify)
 }

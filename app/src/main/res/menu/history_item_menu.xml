@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
         android:id="@+id/menu_open"
         android:icon="@drawable/ic_open"
         android:iconTint="@color/colorTextPrimary"
-        android:title="Open"
-        app:showAsAction="always" />
+        android:title="Open" />
 
     <item
         android:id="@+id/menu_share"
         android:icon="@drawable/ic_share_result"
         android:iconTint="@color/colorTextPrimary"
-        android:title="Share"
-        app:showAsAction="always" />
+        android:title="Share" />
     <item
         android:id="@+id/menu_delete"
         android:icon="@drawable/ic_delete"
-        android:iconTint="@color/colorTextPrimary"
-        android:title="Delete"
-        app:showAsAction="always" />
+        android:title="Delete" />
+
+    <item
+        android:id="@+id/menu_ai_analyze"
+        android:icon="@drawable/ic_ai"
+        android:title="AI Analysis" />
 </menu>

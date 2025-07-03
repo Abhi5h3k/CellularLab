@@ -10,6 +10,8 @@ material = "1.12.0"
 constraintlayout = "2.2.1"
 recyclerview = "1.4.0"
 swiperefreshlayout = "1.1.0"  # latest stable as of now
+okhttp = "4.12.0"
+markwon = "4.6.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -22,6 +24,14 @@ androidx-constraintlayout = { group = "androidx.constraintlayout", name = "const
 taptargetview = { module = "com.getkeepsafe.taptargetview:taptargetview", version = "1.13.3" }
 androidx-recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }
 androidx-swiperefreshlayout = { group = "androidx.swiperefreshlayout", name = "swiperefreshlayout", version.ref = "swiperefreshlayout" }
+okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
+
+markwon = { group = "io.noties.markwon", name = "core", version.ref = "markwon" }
+markwon-html = { group = "io.noties.markwon", name = "html", version.ref = "markwon" }
+markwon-table = { group = "io.noties.markwon", name = "ext-tables", version.ref = "markwon" }
+markwon-strikethrough = { group = "io.noties.markwon", name = "ext-strikethrough", version.ref = "markwon" }
+markwon-tasklist = { group = "io.noties.markwon", name = "ext-tasklist", version.ref = "markwon" }
+markwon-linkify = { group = "io.noties.markwon", name = "linkify", version.ref = "markwon" }
 
 
 [plugins]

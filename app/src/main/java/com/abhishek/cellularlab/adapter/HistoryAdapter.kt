@@ -1,6 +1,8 @@
 package com.abhishek.cellularlab.adapter
 
 import android.app.AlertDialog
+import android.content.Intent
+import android.util.Log
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
@@ -10,9 +12,21 @@ import android.widget.PopupMenu
 import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
+import com.abhishek.cellularlab.BuildConfig
+import com.abhishek.cellularlab.MarkdownViewerActivity
 import com.abhishek.cellularlab.R
 import com.abhishek.cellularlab.model.LogEntry
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
+import org.json.JSONObject
 import java.io.File
+import java.io.IOException
 
 //region Adapter Definition
 /**
@@ -23,11 +37,17 @@ import java.io.File
  * @param onShare Callback invoked when a log file is to be shared.
  * @param onOpen Callback invoked when a log file is to be opened.
  */
+private val GEMINI_API_KEY = BuildConfig.GEMINI_API_KEY
+private const val MODEL = "gemma-3n-e2b-it"
+private const val MAX_LOG_LINES = 1000
+
+
 class HistoryAdapter(
     private val logs: MutableList<LogEntry>,
     private val onShare: (File) -> Unit,
     private val onOpen: (File) -> Unit
 ) : RecyclerView.Adapter<HistoryAdapter.LogViewHolder>() {
+
 
     //region ViewHolder
     /**
@@ -142,6 +162,127 @@ class HistoryAdapter(
                             .setNegativeButton("Cancel", null)
                             .show()
                     }
+
+                    R.id.menu_ai_analyze -> {
+                        if (GEMINI_API_KEY.isBlank()) {
+                            Toast.makeText(anchor.context, "AI key not set", Toast.LENGTH_SHORT)
+                                .show()
+                            return@setOnMenuItemClickListener true
+                        }
+
+                        val logFile = entry.file
+                        val aiFile = File(logFile.parent, "AI_${logFile.name}")
+
+                        if (aiFile.exists()) {
+                            //onOpen(aiFile)
+                            val intent = Intent(anchor.context, MarkdownViewerActivity::class.java)
+                            intent.putExtra("filePath", aiFile.absolutePath)
+                            anchor.context.startActivity(intent)
+                            return@setOnMenuItemClickListener true
+                        }
+
+                        val logText = logFile.readText()
+                        val lineCount = logText.lineSequence().count()
+                        if (lineCount > MAX_LOG_LINES) {
+                            Toast.makeText(
+                                anchor.context,
+                                "Log too long for AI analysis",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            return@setOnMenuItemClickListener true
+                        }
+
+                        val promptText = """
+You are a professional network engineer and a technical writer.
+
+Analyze the following iperf3 log and generate a concise, structured report in **Markdown format** with these sections:
+
+---
+
+## 📊 iPerf3 Test Analysis
+
+### 1. **Test Summary**
+- Identify and mention:
+  - Protocol: TCP or UDP
+  - Direction: Upload / Download / Bidirectional (if clear from the command)
+  - Parallel streams (e.g., -P value)
+  - Requested bandwidth (e.g., -b value if UDP)
+  - Duration (e.g., -t value)
+  - Client IP and Server IP
+  - Port used
+
+### 2. **Performance Observations**
+- Summarize what the log shows:
+  - Bandwidth values
+  - Retransmissions (Retr column)
+  - Packet loss (for UDP)
+  - Jitter (for UDP)
+  - General stability or variance
+
+### 3. **Detected Issues**
+- Point out:
+  - If retransmissions are present
+  - If there's significant packet loss
+  - If bandwidth is highly inconsistent
+
+If no major issues, say so clearly.
+
+### 4. **Recommendations**
+- Suggest network tuning, retrying with different parameters, or infrastructure checks **only if issues are seen**.
+
+### 5. **Quality Rating**
+- One of: Excellent / Good / Fair / Poor
+- Keep it short and justify the rating.
+
+---
+
+**Format your response as raw Markdown** — no code blocks, no triple backticks. Use **bullet points** and **bold** labels for clarity.
+Respond in Markdown without wrapping it in a markdown code block (i.e., no ```markdown). Just raw markdown. Use Emojis when appropriate.
+
+---
+
+**Log:**  
+$logText
+""".trimIndent()
+
+
+                        // Async HTTP call
+                        Toast.makeText(
+                            anchor.context,
+                            "Sending log to AI for analysis...",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        CoroutineScope(Dispatchers.IO).launch {
+                            try {
+                                val response = sendGeminiRequest(promptText)
+                                aiFile.writeText(response)
+
+                                withContext(Dispatchers.Main) {
+                                    Toast.makeText(
+                                        anchor.context,
+                                        "AI analysis complete",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                    //onOpen(aiFile)
+                                    val intent =
+                                        Intent(anchor.context, MarkdownViewerActivity::class.java)
+                                    intent.putExtra("filePath", aiFile.absolutePath)
+                                    anchor.context.startActivity(intent)
+                                }
+                            } catch (e: Exception) {
+                                withContext(Dispatchers.Main) {
+                                    AlertDialog.Builder(anchor.context)
+                                        .setTitle("AI Analysis Failed")
+                                        .setMessage(e.toString())
+                                        .setPositiveButton("OK", null)
+                                        .show()
+                                }
+                                Log.e("AI_ANALYSIS", "Failed to analyze log", e)
+
+                            }
+                        }
+                    }
+
                 }
                 true
             }
@@ -158,6 +299,49 @@ class HistoryAdapter(
     override fun getItemCount() = logs.size
 
     //endregion
+
+    suspend fun sendGeminiRequest(prompt: String): String {
+        val json = """
+        {
+          "contents": [
+            {
+              "parts": [
+                { "text": ${JSONObject.quote(prompt)} }
+              ]
+            }
+          ]
+        }
+    """.trimIndent()
+
+        val url = "https://generativelanguage.googleapis.com/v1beta/models/$MODEL:generateContent"
+
+        val client = OkHttpClient.Builder()
+            .connectTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
+            .readTimeout(120, java.util.concurrent.TimeUnit.SECONDS) // increase if needed
+            .writeTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
+            .build()
+        val request = Request.Builder()
+            .url(url)
+            .addHeader("Content-Type", "application/json")
+            .addHeader("X-goog-api-key", GEMINI_API_KEY)
+            .post(json.toRequestBody("application/json".toMediaTypeOrNull()))
+            .build()
+
+        val response = client.newCall(request).execute()
+        if (!response.isSuccessful) throw IOException("Unexpected code $response")
+
+        val body = response.body?.string() ?: throw IOException("Empty response")
+
+        val root = JSONObject(body)
+        val candidates = root.getJSONArray("candidates")
+        if (candidates.length() == 0) throw IOException("No candidates")
+
+        val content = candidates.getJSONObject(0).getJSONObject("content")
+        val parts = content.getJSONArray("parts")
+        return parts.getJSONObject(0).getString("text").trim()
+    }
+
+
 }
 //endregion
 

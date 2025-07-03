@@ -128,13 +128,17 @@ class ResultHistoryFragment : Fragment() {
      */
     private fun loadLogEntries(): List<LogEntry> {
         val dir = requireContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
-        val logFiles = dir?.listFiles()?.sortedByDescending { it.lastModified() } ?: emptyList()
+        val logFiles = dir?.listFiles()
+            ?.filter { it.name.matches(Regex("""iPerf3_\d{8}_\d{6}_v[\d.]+_\d+\.txt""")) }
+            ?.sortedByDescending { it.lastModified() }
+            ?: emptyList()
 
         return logFiles.map {
             val (file, timestamp, ip, summaryText, icon) = parseLogDetails(it)
             LogEntry(file, timestamp, ip, summaryText, icon)
         }
     }
+
 
     /**
      * Parses a single log file to extract:
