@@ -1,0 +1,52 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="12dp">
+
+    <TextView
+        android:id="@+id/customTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:text="Set Gemini API Key &amp; Model"
+        android:textColor="@android:color/white"
+        android:textSize="18sp" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:boxBackgroundMode="none">
+
+        <EditText
+            android:id="@+id/apiKeyEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/edittext_rounded_bg"
+            android:hint="Gemini API Key"
+            android:inputType="text"
+            android:padding="16dp"
+            android:textColor="@color/colorTextPrimary"
+            android:textColorHint="@color/colorTextSecondary" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:boxBackgroundMode="none">
+
+        <EditText
+            android:id="@+id/modelEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/edittext_rounded_bg"
+            android:hint="Model (e.g. gemma-3n-e2b-it)"
+            android:inputType="text"
+            android:padding="16dp"
+            android:textColor="@color/colorTextPrimary"
+            android:textColorHint="@color/colorTextSecondary" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+</LinearLayout>

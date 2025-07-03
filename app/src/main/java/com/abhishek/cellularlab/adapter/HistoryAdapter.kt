@@ -1,16 +1,19 @@
 package com.abhishek.cellularlab.adapter
 
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.util.Log
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.PopupMenu
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.abhishek.cellularlab.BuildConfig
 import com.abhishek.cellularlab.MarkdownViewerActivity
@@ -37,10 +40,13 @@ import java.io.IOException
  * @param onShare Callback invoked when a log file is to be shared.
  * @param onOpen Callback invoked when a log file is to be opened.
  */
-private val GEMINI_API_KEY = BuildConfig.GEMINI_API_KEY
+//private val GEMINI_API_KEY = BuildConfig.GEMINI_API_KEY
 private const val MODEL = "gemma-3n-e2b-it"
-private const val MAX_LOG_LINES = 1000
+private const val MAX_LOG_CHARS = 20000  // Roughly ~5,000 tokens
 
+private const val PREFS_NAME = "AiConfig"
+private const val PREF_KEY_GEMINI = "geminiApiKey"
+private const val PREF_KEY_MODEL = "geminiModel"
 
 class HistoryAdapter(
     private val logs: MutableList<LogEntry>,
@@ -76,6 +82,17 @@ class HistoryAdapter(
         notifyDataSetChanged()
     }
     //endregion
+
+    fun getEffectiveGeminiKey(context: android.content.Context): String {
+        return if (BuildConfig.GEMINI_API_KEY.isNotBlank()) {
+            BuildConfig.GEMINI_API_KEY
+        } else {
+            val prefs =
+                context.getSharedPreferences(PREFS_NAME, android.content.Context.MODE_PRIVATE)
+            prefs.getString(PREF_KEY_GEMINI, "") ?: ""
+        }
+    }
+
 
     //region Adapter Lifecycle Methods
 
@@ -113,6 +130,9 @@ class HistoryAdapter(
 
         // Handle "more" button click: show popup menu with actions
         holder.btnMore.setOnClickListener { anchor ->
+            // Debug
+            //Toast.makeText(anchor.context, "Key: ${BuildConfig.GEMINI_API_KEY} , Is blank : ${GEMINI_API_KEY.isBlank()}", Toast.LENGTH_LONG).show()
+
             // Use a themed context for the popup menu
             val themedCtx = ContextThemeWrapper(anchor.context, R.style.CustomPopupMenu)
             val popup = PopupMenu(themedCtx, anchor)
@@ -164,9 +184,11 @@ class HistoryAdapter(
                     }
 
                     R.id.menu_ai_analyze -> {
-                        if (GEMINI_API_KEY.isBlank()) {
+                        val geminiKey = getEffectiveGeminiKey(anchor.context)
+                        if (geminiKey.isBlank()) {
                             Toast.makeText(anchor.context, "AI key not set", Toast.LENGTH_SHORT)
                                 .show()
+                            showUpdateApiKeyDialog(anchor)
                             return@setOnMenuItemClickListener true
                         }
 
@@ -182,8 +204,7 @@ class HistoryAdapter(
                         }
 
                         val logText = logFile.readText()
-                        val lineCount = logText.lineSequence().count()
-                        if (lineCount > MAX_LOG_LINES) {
+                        if (logText.length > MAX_LOG_CHARS) {
                             Toast.makeText(
                                 anchor.context,
                                 "Log too long for AI analysis",
@@ -254,7 +275,7 @@ $logText
                         ).show()
                         CoroutineScope(Dispatchers.IO).launch {
                             try {
-                                val response = sendGeminiRequest(promptText)
+                                val response = sendGeminiRequest(anchor.context, promptText)
                                 aiFile.writeText(response)
 
                                 withContext(Dispatchers.Main) {
@@ -273,8 +294,11 @@ $logText
                                 withContext(Dispatchers.Main) {
                                     AlertDialog.Builder(anchor.context)
                                         .setTitle("AI Analysis Failed")
-                                        .setMessage(e.toString())
+                                        .setMessage(e.message ?: "Something went wrong.")
                                         .setPositiveButton("OK", null)
+                                        .setNegativeButton("Update API Key") { _, _ ->
+                                            showUpdateApiKeyDialog(anchor)
+                                        }
                                         .show()
                                 }
                                 Log.e("AI_ANALYSIS", "Failed to analyze log", e)
@@ -291,6 +315,42 @@ $logText
         }
     }
 
+    private fun showUpdateApiKeyDialog(view: View) {
+        val context = view.context
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val currentKey = prefs.getString(PREF_KEY_GEMINI, "") ?: ""
+        val currentModel = prefs.getString(PREF_KEY_MODEL, MODEL) // fallback to default
+
+        val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_api_key_input, null)
+        val inputEditText = dialogView.findViewById<EditText>(R.id.apiKeyEditText)
+        val modelEditText = dialogView.findViewById<EditText>(R.id.modelEditText)
+
+        inputEditText.setText(currentKey)
+        modelEditText.setText(currentModel)
+
+        val dialog = AlertDialog.Builder(context, R.style.CustomAlertDialog)
+            .setView(dialogView)
+            .setPositiveButton("Save") { _, _ ->
+                val newKey = inputEditText.text.toString().trim()
+                val newModel = modelEditText.text.toString().trim()
+                prefs.edit()
+                    .putString(PREF_KEY_GEMINI, newKey)
+                    .putString(PREF_KEY_MODEL, newModel)
+                    .apply()
+                Toast.makeText(context, "API key & model updated", Toast.LENGTH_SHORT).show()
+            }
+            .setNegativeButton("Cancel", null)
+            .create()
+
+        dialog.show()
+
+        // Force button text color if needed
+        val color = ContextCompat.getColor(context, R.color.colorTextPrimary)
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.setTextColor(color)
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE)?.setTextColor(color)
+    }
+
+
     /**
      * Returns the total number of log entries.
      *
@@ -300,7 +360,10 @@ $logText
 
     //endregion
 
-    suspend fun sendGeminiRequest(prompt: String): String {
+    suspend fun sendGeminiRequest(context: Context, prompt: String): String {
+        val GEMINI_API_KEY = getEffectiveGeminiKey(context)
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val model = prefs.getString(PREF_KEY_MODEL, MODEL) ?: MODEL
         val json = """
         {
           "contents": [
@@ -313,7 +376,7 @@ $logText
         }
     """.trimIndent()
 
-        val url = "https://generativelanguage.googleapis.com/v1beta/models/$MODEL:generateContent"
+        val url = "https://generativelanguage.googleapis.com/v1beta/models/$model:generateContent"
 
         val client = OkHttpClient.Builder()
             .connectTimeout(30, java.util.concurrent.TimeUnit.SECONDS)

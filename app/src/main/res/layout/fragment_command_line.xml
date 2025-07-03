@@ -2,13 +2,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="2dp">
+    android:padding="12dp">
 
     <!-- Command Input Field -->
     <EditText
         android:id="@+id/command_input"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
         android:background="@drawable/edittext_rounded_bg"
         android:gravity="top|start"
         android:hint="e.g. iperf3 -c 192.168.1.1 -u -b 10M"
@@ -16,7 +17,7 @@
         android:lines="2"
         android:maxLines="3"
         android:minHeight="56dp"
-        android:padding="16dp"
+        android:padding="10dp"
         android:scrollbars="vertical"
         android:textColor="@color/colorTextPrimary"
         android:textColorHint="@color/colorTextSecondary"

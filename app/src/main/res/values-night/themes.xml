@@ -1,4 +1,5 @@
 <resources>
+
     <style name="Theme.CellularLab" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary branding colors -->
         <item name="colorPrimary">@color/colorPrimary</item> <!-- Green Start Test -->
@@ -45,5 +46,9 @@
     <style name="Widget.App.ActionBar" parent="Widget.MaterialComponents.Toolbar.Primary">
         <item name="android:background">@color/colorPrimaryDark</item>
         <item name="titleTextColor">@color/colorOnPrimary</item>
+    </style>
+
+    <style name="CustomAlertDialog" parent="Theme.MaterialComponents.DayNight.Dialog.Alert">
+        <item name="android:background">@color/colorPrimaryDark</item>
     </style>
 </resources>

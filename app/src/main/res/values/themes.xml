@@ -82,4 +82,8 @@
         <!-- <item name="android:background">@color/colorTextSecondary</item> -->
         <!-- <item name="itemIconTint">@color/colorTextPrimary</item> -->
     </style>
+
+    <style name="CustomAlertDialog" parent="Theme.MaterialComponents.DayNight.Dialog.Alert">
+        <item name="android:background">@color/colorPrimaryDark</item>
+    </style>
 </resources>
