@@ -181,7 +181,7 @@ class ResultHistoryFragment : Fragment() {
         // Choose emoji based on success percentage
         val icon = when {
             successCount == totalIterations -> "✅"
-            successCount >= totalIterations / 2 -> "⚠️"
+            successCount.toDouble() / totalIterations >= 0.5 -> "⚠️"
             else -> "❌"
         }
 

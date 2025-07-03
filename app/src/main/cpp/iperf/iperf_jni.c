@@ -9,23 +9,38 @@
 #include "iperf.h"
 #include "iperf_api.h"
 
+// ─────────────────────────────────────────────────────────────────────────────
 // Logging macros
+// ─────────────────────────────────────────────────────────────────────────────
 #define TAG "iperfJNI"
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, TAG, __VA_ARGS__)
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, TAG, __VA_ARGS__)
 
-// Globals
+// ─────────────────────────────────────────────────────────────────────────────
+// Global state
+// ─────────────────────────────────────────────────────────────────────────────
 static struct iperf_test *global_test = NULL;
 static pthread_t reader_thread;
+static volatile bool stop_requested = false;
 
-// Structure for passing data to thread
+// ─────────────────────────────────────────────────────────────────────────────
+// Structs
+// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * CallbackArgs - Structure to pass data into the output-reading thread.
+ */
 struct CallbackArgs {
     JavaVM *jvm;
     jobject callback_global;
     int pipe_fd;
 };
 
-// Thread function to read iperf output and forward to Java callback
+// ─────────────────────────────────────────────────────────────────────────────
+// Output reader thread
+// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * Reads output from iperf pipe and forwards each line to the Java callback.
+ */
 void *readerThreadFunc(void *args_ptr) {
     struct CallbackArgs *args = (struct CallbackArgs *) args_ptr;
     JNIEnv *env;
@@ -48,47 +63,54 @@ void *readerThreadFunc(void *args_ptr) {
     (*env)->DeleteGlobalRef(env, args->callback_global);
     (*args->jvm)->DetachCurrentThread(args->jvm);
     free(args);
-
     return NULL;
 }
 
-// Forcefully stop a running iperf test
+// ─────────────────────────────────────────────────────────────────────────────
+// Graceful stop method (JNI call from Java)
+// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * Gracefully requests iperf to stop, used by the stop button in the UI.
+ */
 JNIEXPORT void JNICALL
-Java_com_abhishek_cellularlab_ui_RunTestFragment_forceStopIperfTest(JNIEnv *env, jobject thiz,
-                                                              jobject callback) {
+Java_com_abhishek_cellularlab_tests_iperf_IperfRunner_forceStopIperfTest(JNIEnv *env, jobject thiz,
+                                                                         jobject callback) {
+    stop_requested = true;
+
     jclass callbackClass = (*env)->GetObjectClass(env, callback);
     jmethodID onOutput = (*env)->GetMethodID(env, callbackClass, "onOutput",
                                              "(Ljava/lang/String;)V");
-    jmethodID onError = (*env)->GetMethodID(env, callbackClass, "onError", "(Ljava/lang/String;)V");
 
     jstring statusMsg = (*env)->NewStringUTF(env,
-                                             "[iPerf JNI] Requested force stop of ongoing iPerf test.");
+                                             "[iPerf JNI] Requested graceful stop of iPerf test.");
     (*env)->CallVoidMethod(env, callback, onOutput, statusMsg);
     (*env)->DeleteLocalRef(env, statusMsg);
 
-    if (global_test) {
+    if (global_test && !global_test->done) {
         global_test->done = 1;
-        global_test = NULL;
-
-        jstring errMsg = (*env)->NewStringUTF(env,
-                                              "[iPerf JNI] iPerf test was stopped and cleaned up successfully.");
-        (*env)->CallVoidMethod(env, callback, onError, errMsg);
-        (*env)->DeleteLocalRef(env, errMsg);
+        iperf_set_send_state(global_test, IPERF_DONE);
+        shutdown(global_test->ctrl_sck, SHUT_RDWR);  // Unblocks select()
     }
 }
 
-// Main iperf JNI entrypoint: runs iperf3 test and sends output to callback
+// ─────────────────────────────────────────────────────────────────────────────
+// Main iperf run method (JNI call from Java)
+// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * Starts and runs an iperf3 client session using given arguments.
+ * Sends output and status updates via the provided callback.
+ */
 JNIEXPORT void JNICALL
-Java_com_abhishek_cellularlab_ui_RunTestFragment_runIperfLive(JNIEnv *env, jobject thiz,
-                                                        jobjectArray arguments, jobject callback) {
-
+Java_com_abhishek_cellularlab_tests_iperf_IperfRunner_runIperfLive(JNIEnv *env, jobject thiz,
+                                                                   jobjectArray arguments,
+                                                                   jobject callback) {
     jclass callbackClass = (*env)->GetObjectClass(env, callback);
     jmethodID onOutput = (*env)->GetMethodID(env, callbackClass, "onOutput",
                                              "(Ljava/lang/String;)V");
     jmethodID onError = (*env)->GetMethodID(env, callbackClass, "onError", "(Ljava/lang/String;)V");
     jmethodID onComplete = (*env)->GetMethodID(env, callbackClass, "onComplete", "()V");
 
-    // Convert Java arguments to native argv[]
+    // ───── Convert Java String[] to native char* argv[] ─────
     int argc = (*env)->GetArrayLength(env, arguments);
     if (argc > 64) argc = 64;
 
@@ -100,7 +122,7 @@ Java_com_abhishek_cellularlab_ui_RunTestFragment_runIperfLive(JNIEnv *env, jobje
         (*env)->ReleaseStringUTFChars(env, arg, arg_str);
     }
 
-    // Initialize iperf test
+    // ───── Create and initialize iperf test ─────
     global_test = iperf_new_test();
     if (!global_test) {
         jstring errMsg = (*env)->NewStringUTF(env, "Failed to create iperf test");
@@ -110,59 +132,82 @@ Java_com_abhishek_cellularlab_ui_RunTestFragment_runIperfLive(JNIEnv *env, jobje
     }
     iperf_defaults(global_test);
 
-    // Setup pipe for capturing output
+    // ───── Setup pipe to capture iperf output ─────
     int pipefd[2];
-    pipe(pipefd);
-    FILE *fp = fdopen(pipefd[1], "w");
-    setvbuf(fp, NULL, _IOLBF, 0);  // Line-buffered output
-    global_test->outfile = fp;
-
-    if (iperf_parse_arguments(global_test, argc, argv) < 0) {
-        fflush(fp);
-        fclose(fp);
-
-        const char *err_str = iperf_strerror(i_errno);
-        LOGE("iperf_parse_arguments failed: %s", err_str);
-        jstring errMsg = (*env)->NewStringUTF(env, err_str);
+    if (pipe(pipefd) < 0) {
+        jstring errMsg = (*env)->NewStringUTF(env, "Failed to create output pipe");
         (*env)->CallVoidMethod(env, callback, onError, errMsg);
         (*env)->DeleteLocalRef(env, errMsg);
-
         iperf_free_test(global_test);
         return;
     }
 
-    // Start output reading thread
+    FILE *fp = fdopen(pipefd[1], "w");
+    setvbuf(fp, NULL, _IOLBF, 0);
+    global_test->outfile = fp;
+
+    // ───── Parse iperf arguments ─────
+    if (iperf_parse_arguments(global_test, argc, argv) < 0) {
+        fflush(fp);
+        fclose(fp);
+
+        jstring errMsg = (*env)->NewStringUTF(env, iperf_strerror(i_errno));
+        (*env)->CallVoidMethod(env, callback, onError, errMsg);
+        (*env)->DeleteLocalRef(env, errMsg);
+        iperf_free_test(global_test);
+        return;
+    }
+
+    // ───── Start reader thread ─────
     struct CallbackArgs *cb_args = malloc(sizeof(struct CallbackArgs));
     (*env)->GetJavaVM(env, &cb_args->jvm);
     cb_args->callback_global = (*env)->NewGlobalRef(env, callback);
     cb_args->pipe_fd = pipefd[0];
     pthread_create(&reader_thread, NULL, readerThreadFunc, cb_args);
 
-    // Notify start
+    // ───── Notify start ─────
     jstring initMsg = (*env)->NewStringUTF(env, "🚀 Initiating iPerf3 client request...\n");
     (*env)->CallVoidMethod(env, callback, onOutput, initMsg);
     (*env)->DeleteLocalRef(env, initMsg);
 
-    // Run the actual test
+    // ───── Run the test ─────
     int result = iperf_run_client(global_test);
-    if (result < 0) {
+    if (result < 0 && global_test) {
         jstring errMsg = (*env)->NewStringUTF(env, iperf_strerror(i_errno));
         (*env)->CallVoidMethod(env, callback, onError, errMsg);
         (*env)->DeleteLocalRef(env, errMsg);
     }
 
+    // ───── Cleanup ─────
     fflush(fp);
     fclose(fp);
-    iperf_free_test(global_test);
-    global_test = NULL;
+
+    if (global_test) {
+        iperf_free_test(global_test);
+        global_test = NULL;
+    }
 
     pthread_join(reader_thread, NULL);
 
-    // Notify completion
-    (*env)->CallVoidMethod(env, callback, onComplete);
-
-    // Free memory
     for (int i = 0; i < argc; i++) {
         free(argv[i]);
     }
+
+    jstring finalMsg;
+    if (stop_requested) {
+        finalMsg = (*env)->NewStringUTF(env, "[iPerf JNI] Test was stopped by user.");
+    } else if (result < 0) {
+        finalMsg = (*env)->NewStringUTF(env, "[iPerf JNI] Test failed to complete successfully.");
+    } else {
+        finalMsg = (*env)->NewStringUTF(env, "[iPerf JNI] Test completed successfully.");
+    }
+    (*env)->CallVoidMethod(env, callback, onOutput, finalMsg);
+    (*env)->DeleteLocalRef(env, finalMsg);
+
+    // ───── Final cleanup ─────
+    stop_requested = false;
+    reader_thread = 0;
+
+    // ───── Notify completion to Java ─────
+    (*env)->CallVoidMethod(env, callback, onComplete);
 }

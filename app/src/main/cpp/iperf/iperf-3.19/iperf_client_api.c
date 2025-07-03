@@ -402,7 +402,6 @@ iperf_handle_message_client(struct iperf_test *test) {
 }
 
 
-
 /* iperf_connect -- client to server connection function */
 int
 iperf_connect(struct iperf_test *test) {
@@ -848,7 +847,7 @@ iperf_run_client(struct iperf_test *test) {
                 errno = rc;
                 iperf_err(test, "cleanup_and_fail in pthread_cancel - %s", iperf_strerror(i_errno));
             }
-            rc = pthread_join(sp->thr, NULL); 
+            rc = pthread_join(sp->thr, NULL);
             if (rc != 0 && rc != ESRCH) {
                 i_errno = IEPTHREADJOIN;
                 errno = rc;

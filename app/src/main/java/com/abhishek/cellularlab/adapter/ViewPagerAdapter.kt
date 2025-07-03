@@ -3,6 +3,7 @@ package com.abhishek.cellularlab.adapter
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.abhishek.cellularlab.ui.CommandLineFragment
 import com.abhishek.cellularlab.ui.ResultHistoryFragment
 import com.abhishek.cellularlab.ui.RunTestFragment
 
@@ -21,7 +22,7 @@ class ViewPagerAdapter(fa: FragmentActivity) : FragmentStateAdapter(fa) {
      * Returns the number of pages/tabs in the ViewPager.
      * Currently, there are 2 pages: RunTest and ResultHistory.
      */
-    override fun getItemCount(): Int = 2
+    override fun getItemCount(): Int = 3
 
     /**
      * Creates and returns the Fragment associated with a specific position.
@@ -33,7 +34,8 @@ class ViewPagerAdapter(fa: FragmentActivity) : FragmentStateAdapter(fa) {
         return when (position) {
             0 -> RunTestFragment()         // First tab: Run Test
             1 -> ResultHistoryFragment()   // Second tab: Result History
-            // 2 -> SavedProfilesFragment() // Uncomment to add a third tab in the future
+            2 -> CommandLineFragment()   // Third tab: Command Line
+            // 3 -> SavedProfilesFragment() // Uncomment to add a third tab in the future
             else -> throw IllegalStateException("Invalid tab index")
         }
     }

@@ -24,28 +24,18 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity.MODE_PRIVATE
 import androidx.fragment.app.Fragment
 import com.abhishek.cellularlab.R
-import com.abhishek.cellularlab.tests.iperf.IperfCallback
+import com.abhishek.cellularlab.tests.iperf.IperfRunner
 import com.abhishek.cellularlab.tests.iperf.IperfTestManage
 import com.getkeepsafe.taptargetview.TapTarget
 import com.getkeepsafe.taptargetview.TapTargetSequence
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 class RunTestFragment : Fragment() {
 
-    // region JNI and Constants
+    // region Constants
     companion object {
-        init {
-            // Load native library for JNI calls
-            System.loadLibrary("cellularlab")
-        }
 
         // SharedPreferences keys
         private const val PREFS_NAME = "AppPreferences"
@@ -60,9 +50,6 @@ class RunTestFragment : Fragment() {
         private const val KEY_VERBOSE_CHECKBOX = "verboseCheckbox"
     }
 
-    // JNI function declarations for iPerf test control
-    external fun runIperfLive(arguments: Array<String>, callback: IperfCallback)
-    external fun forceStopIperfTest(callback: IperfCallback)
     // endregion
 
     // region View Declarations
@@ -116,12 +103,8 @@ class RunTestFragment : Fragment() {
     private var isSmartIncrementalRampUpTest = false
     private var isHybridTest = false
 
-    // Timer and test management
-    private var startTimeMillis: Long = 0L
-    private var timerJob: Job? = null
     private var timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
     private var iperfManager: IperfTestManage? = null
-    // endregion
 
     // region Fragment Lifecycle
     override fun onCreateView(
@@ -163,8 +146,10 @@ class RunTestFragment : Fragment() {
         // Button click listeners
         startBtn.setOnClickListener { onStartButtonClick() }
         stopBtn.setOnClickListener {
-            iperfManager?.stopTests()
-            resetTestUI()
+            stopBtn.isEnabled = false
+            iperfManager?.stopTests {
+                resetTestUI() // ✅ Only runs after runJob's onComplete
+            }
         }
 
         // Show intro guide on first launch
@@ -183,6 +168,11 @@ class RunTestFragment : Fragment() {
         // Ensure layout is refreshed
         view?.requestLayout()
     }
+//    override fun onDestroyView() {
+//        super.onDestroyView()
+//        iperfManager?.clear()
+//        iperfManager = null
+//    }
     // endregion
 
     // region UI Setup
@@ -264,6 +254,7 @@ class RunTestFragment : Fragment() {
         testDirection.setSelection(0)
     }
 
+    // TODO: Refactor this to a common utility class [IperfRunner.kt]
     /**
      * Enables double-tap gesture on the output scroll view to toggle auto-scroll.
      */
@@ -324,10 +315,8 @@ class RunTestFragment : Fragment() {
             scrollView = scrollView,
             isAutoScrollEnabled = { isAutoScrollEnabled },
             timestamp = timestamp,
-            runIperfLive = ::runIperfLive,
-            forceStopIperfTest = ::forceStopIperfTest,
-            startTimer = ::startTimer,
-            stopTimer = ::stopTimer,
+            startTimer = { IperfRunner.startTimer(timerView) },
+            stopTimer = { IperfRunner.stopTimer(timerView) },
             onTestComplete = {
                 startBtn.isEnabled = true
                 stopBtn.isEnabled = false
@@ -353,6 +342,7 @@ class RunTestFragment : Fragment() {
      * Resets the UI to its initial state for a new test.
      */
     private fun resetTestUI() {
+        startBtn.text = "START TEST"
         outputLabel.visibility = View.GONE
         outputLayout.visibility = View.GONE
 
@@ -364,35 +354,6 @@ class RunTestFragment : Fragment() {
     }
     // endregion
 
-    // region Timer
-    /**
-     * Starts a coroutine timer to update elapsed time during the test.
-     */
-    private fun startTimer() {
-        startTimeMillis = System.currentTimeMillis()
-        timerJob = CoroutineScope(Dispatchers.Main).launch {
-            while (isActive) {
-                val elapsed = System.currentTimeMillis() - startTimeMillis
-                val formatted = String.format(
-                    Locale.getDefault(),
-                    "%02d:%02d:%02d",
-                    (elapsed / 3600000).toInt(),
-                    (elapsed / 60000 % 60).toInt(),
-                    (elapsed / 1000 % 60).toInt()
-                )
-                timerView.text = "⏱ Elapsed: $formatted"
-                delay(1000)
-            }
-        }
-    }
-
-    /**
-     * Stops the timer coroutine.
-     */
-    private fun stopTimer() {
-        timerJob?.cancel()
-    }
-    // endregion
 
     // region Argument Builder
     /**

@@ -43,7 +43,8 @@ class MainActivity : AppCompatActivity() {
             tab.text = when (position) {
                 0 -> "Run Test"
                 1 -> "History"
-                // 2 -> "Test Profiles" // Uncomment if you add more tabs
+                2 -> "Command Line"
+                // 3 -> "Test Profiles" // Uncomment if you add more tabs
                 else -> ""
             }
         }.attach()
