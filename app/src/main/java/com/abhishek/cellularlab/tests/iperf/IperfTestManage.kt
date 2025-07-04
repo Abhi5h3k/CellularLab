@@ -70,6 +70,8 @@ class IperfTestManage(
 
     private val mainScope = CoroutineScope(Dispatchers.Main)
 
+    @Volatile
+    private var isIperfRunning = false
     // endregion
 
     // region Public Lifecycle
@@ -87,6 +89,7 @@ class IperfTestManage(
     ) {
 
         var currentArgs = args.copyOf()
+
 
         // region Timing & Config
         val testDurationMs = getTestDurationMillis(args) // includes buffer
@@ -138,7 +141,10 @@ class IperfTestManage(
             // endregion
 
             // region Main Test Loop
-            repeat(testIterations) { iteration ->
+            for (iteration in 0 until testIterations) {
+
+                if (wasStoppedManually) break
+
                 val currentTime = SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date())
                 append("\n\n🕒 [$currentTime] ──🚀 Starting iPerf3 Test ${iteration + 1}/$testIterations ──\n\n$commandStr\n")
 
@@ -199,6 +205,7 @@ class IperfTestManage(
 
                 // region Start Actual iPerf Test
                 val runJob = launch(Dispatchers.IO) {
+                    isIperfRunning = true
                     val isUdp = currentArgs.contains("-u")
                     IperfRunner.runIperfLive(currentArgs, createIperfCallback(onLine = { line ->
                         append("📊 $line")
@@ -219,15 +226,17 @@ class IperfTestManage(
                             }
                         }
                     }, onError = {
+                        isIperfRunning = false
                         append("\n❌ Error: $it")
                         lastIterationHadError = true
                         testCompleted.complete(Unit)
                     }, onComplete = {
+                        isIperfRunning = false
                         append("\n\n🏁 [End] Iteration ${iteration + 1}")
 
                         if (isUdp && packetLossHistory.isEmpty() && !lastIterationHadError) append("ℹ️ No packet loss stats detected in this run.")
 
-                        if (iteration == testIterations - 1 || wasStoppedManually) {
+                        if (iteration == testIterations - 1) {
                             finalizeTest(wasStoppedManually)
                         }
 
@@ -249,6 +258,7 @@ class IperfTestManage(
                         }
                     }
                 } catch (e: TimeoutCancellationException) {
+                    isIperfRunning = false
                     append("⏰ Timeout: iPerf did not respond for iteration ${iteration + 1}")
                 }
                 // endregion
@@ -300,17 +310,29 @@ class IperfTestManage(
                 if (iteration < testIterations - 1 && !wasStoppedManually) {
                     if (lastIterationHadError) {
                         append("\n⏳ Error occurred. Waiting ${errorBackoffMs / 1000} seconds before next test...")
-                        delay(errorBackoffMs)
+                        val continueAfterError = safeDelay(errorBackoffMs)
+                        if (!continueAfterError) break
                         lastIterationHadError = false
                     }
-                    append("⏳ Waiting ${waitTime} seconds before next test...")
-                    delay(waitTimeMillis.toLong())
+                    append("⏳ Waiting $waitTime seconds before next test...")
+                    val continueTest = safeDelay(waitTimeMillis.toLong())
+                    if (!continueTest) break
                 }
                 // endregion
             }
             // end repeat
             // endregion
         }
+    }
+
+    private suspend fun safeDelay(totalMs: Long, checkIntervalMs: Long = 200): Boolean {
+        var waited = 0L
+        while (waited < totalMs) {
+            if (wasStoppedManually) return false
+            delay(checkIntervalMs)
+            waited += checkIntervalMs
+        }
+        return true
     }
 
     /**
@@ -336,10 +358,13 @@ class IperfTestManage(
         iperfJob?.cancel()
 
         // 🔍 Check if there is no running job (already complete or not started)
-        if (iperfJob == null || iperfJob?.isCompleted == true) {
-            append("✅ [Stopped] No active test running. Finalizing...")
+        if (wasStoppedManually) {
+            if (!isIperfRunning) {
+                append("✅ [Stopped] No active test running. Finalizing...")
+            }
             finalizeTest(wasStoppedManually = true)
         }
+
 
 //        watchdogJob?.cancel()
 //        watchdogJob = null
