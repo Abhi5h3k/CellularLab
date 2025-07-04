@@ -35,7 +35,7 @@ With JNI bindings to native iPerf3, it offers low-level control, intelligent tes
 
 ---
 
-## 🔧 NEW: Command Mode (v1.9)
+## 🔧 NEW: Command Mode
 
 Take full control of your testing with **Command Mode** — execute custom iPerf3 commands directly:
 
@@ -47,7 +47,7 @@ Take full control of your testing with **Command Mode** — execute custom iPerf
 
 ---
 
-## 🤖 NEW: Gemini AI Analysis (v2.0)
+## 🤖 NEW: Gemini AI Analysis 
 
 Let your assistant do the heavy lifting!
 
@@ -155,7 +155,7 @@ You can:
 
 ✨ Tap "AI Analyze" on any log from **History**
 
-<img src="https://github.com/user-attachments/assets/3c130e74-744f-4af6-98b3-b7f158b7b68e" alt="Gemini AI"   />
+<img src="https://github.com/user-attachments/assets/39273752-8051-4b61-818d-392a5062a259" alt="NEW AI" width="30%"/>
 
 ---
 
