@@ -191,6 +191,17 @@ To upgrade to a newer iPerf3 version:
 
 ---
 
+## 📚 Articles & Guides
+
+Want to dive deeper into how this app was built or learn how to compile iPerf3 for Android?
+
+- 📖 [How I Accidentally Vibe-Coded an Android iPerf3 App with AI](https://iper3.hashnode.dev/how-i-accidentally-vibe-coded-an-android-iperf3-app-with-ai)
+- 🛠️ [Compiling iPerf3 in Android with CMake and JNI – A Practical Guide](https://iper3.hashnode.dev/compiling-iperf3-in-android-with-cmake-and-jni-a-practical-guide)
+
+Follow me on Hashnode for more deep dives:  
+🌐 [@AbhishekIN on Hashnode](https://hashnode.com/@AbhishekIN)
+
+---
 ## 📜 License
 
 This project is open-source under a **custom MIT-style license**:
