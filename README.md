@@ -3,7 +3,7 @@
 [![Abhishek LinkedIn](https://img.shields.io/badge/Abhishek-LinkedIn-blue.svg?style=for-the-badge)](https://www.linkedin.com/in/abhi5h3k/)
 [![Abhishek StackOverflow](https://img.shields.io/badge/Abhishek-StackOverflow-orange.svg?style=for-the-badge)](https://stackoverflow.com/users/6870223/abhi?tab=profile)
 
-**CellularLab** is a powerful Android app that acts as a native frontend for [iPerf3](https://github.com/esnet/iperf), the gold standard for TCP/UDP performance testing.
+**CellularLab** is a modern, native Android frontend for [iPerf3](https://github.com/esnet/iperf) — the industry-standard tool for TCP and UDP network performance testing.
 
 With JNI bindings to native iPerf3, it offers low-level control, intelligent test strategies, and a polished UI — perfect for field diagnostics, automated lab tests, and performance validation on mobile.
 
@@ -12,6 +12,15 @@ With JNI bindings to native iPerf3, it offers low-level control, intelligent tes
 ## 🖼️ UI Preview
 
 <img src="https://github.com/user-attachments/assets/c909b8dd-32d3-4ad9-8612-67249c3dca79" alt="Options" width="80%" height="80%"/>
+
+> _A fast, native iPerf3 Android client with TCP/UDP/AI log analysis support. Built with JNI + Android Studio._
+
+## 📥 Download APK
+
+Latest signed release: [Download from GitHub Releases →](https://github.com/Abhi5h3k/CellularLab/releases)
+
+> ⚠️ Works on Android 10+ (API 29+).  
+> 📁 Logs are saved to your `Downloads/` folder.
 
 ---
 
@@ -35,7 +44,7 @@ With JNI bindings to native iPerf3, it offers low-level control, intelligent tes
 
 ---
 
-## 🔧 NEW: Command Mode
+## 🔧 Command Mode
 
 Take full control of your testing with **Command Mode** — execute custom iPerf3 commands directly:
 
@@ -47,7 +56,7 @@ Take full control of your testing with **Command Mode** — execute custom iPerf
 
 ---
 
-## 🤖 NEW: Gemini AI Analysis 
+## 🤖 Gemini AI Analysis 
 
 Let your assistant do the heavy lifting!
 
@@ -71,11 +80,12 @@ Let your assistant do the heavy lifting!
 
 <img src="https://github.com/user-attachments/assets/5dbbfb7f-d833-40dd-9bd5-ac357f308844" alt="Strategy" width="50%" height="50%"/>
 
-| Strategy             | Description |
-|----------------------|-------------|
-| **Incremental Ramp-Up** | Gradually increases UDP bandwidth to simulate real-time scaling and detect limits |
-| **Hybrid TCP+UDP**   | Uses TCP to estimate capacity, then runs UDP at that level |
-| **Smart Ramp-Up**    | Increases UDP load only if ≥90% of packets succeed in previous step |
+| 🚀 Strategy                | 📝 Description                                                                    |
+| -------------------------- | --------------------------------------------------------------------------------- |
+| 📈 **Incremental Ramp-Up** | Gradually increases UDP bandwidth to simulate real-time scaling and detect limits |
+| 🔄 **Hybrid TCP+UDP**      | Uses TCP to estimate capacity, then runs UDP at that level                        |
+| 🧠 **Smart Ramp-Up**       | Increases UDP load only if ≥90% of packets succeed in previous step               |
+
 
 These are ideal for **automated testing environments** or **dynamic network analysis**.
 
