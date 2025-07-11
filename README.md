@@ -12,7 +12,7 @@ With JNI bindings to native iPerf3, it offers low-level control, intelligent tes
 
 ## 🖼️ UI Preview
 
-<img src="https://github.com/user-attachments/assets/c909b8dd-32d3-4ad9-8612-67249c3dca79" alt="Options" width="80%" height="80%"/>
+<img src="https://github.com/user-attachments/assets/c909b8dd-32d3-4ad9-8612-67249c3dca79" alt="Options" width="80%"/>
 
 > _A fast, native [iPerf3](https://github.com/esnet/iperf) Android client with TCP/UDP/AI log analysis support. Built with JNI + Android Studio._
 
@@ -37,7 +37,7 @@ Latest signed release: [Download from GitHub Releases →](https://github.com/Ab
 
 ### ✅ Test Directions
 
-<img src="https://github.com/user-attachments/assets/ea091615-9a5c-4240-bb69-0262166f4e86" alt="Test Direction" width="50%" height="50%"/>
+<img src="https://github.com/user-attachments/assets/ea091615-9a5c-4240-bb69-0262166f4e86" alt="Test Direction" width="50%"/>
 
 - 📤 Upload
 - 📥 Download (`-R`)
@@ -73,13 +73,13 @@ Let your assistant do the heavy lifting!
 
 > Great for reports, debugging, and sharing with your network team.
 
-<img src="https://github.com/user-attachments/assets/d35b6a2b-75f8-43f2-97e3-2102e740fee2" alt="Gemini AI" width="50%" height="50%"/>
+<img src="https://github.com/user-attachments/assets/d35b6a2b-75f8-43f2-97e3-2102e740fee2" alt="Gemini AI" width="50%" />
 
 ---
 
 ## 🧠 Smart Test Strategies
 
-<img src="https://github.com/user-attachments/assets/5dbbfb7f-d833-40dd-9bd5-ac357f308844" alt="Strategy" width="50%" height="50%"/>
+<img src="https://github.com/user-attachments/assets/5dbbfb7f-d833-40dd-9bd5-ac357f308844" alt="Strategy" width="50%" />
 
 | 🚀 Strategy                | 📝 Description                                                                    |
 | -------------------------- | --------------------------------------------------------------------------------- |
@@ -105,7 +105,7 @@ These are ideal for **automated testing environments** or **dynamic network anal
 
 ## 📁 Output, Logs & History
 
-<img src="https://github.com/user-attachments/assets/a218bded-bfd6-443c-923b-c379f083a7e7" alt="Output" width="70%" height="70%"/>
+<img src="https://github.com/user-attachments/assets/a218bded-bfd6-443c-923b-c379f083a7e7" alt="Output" width="70%"/>
 
 - 📉 Real-time iPerf3-style logs (1s interval)
 - 📂 Logs saved to `Downloads/` folder
@@ -133,7 +133,7 @@ No iPerf server? Use these community-hosted ones:
 
 New users get an in-app walkthrough of the key screens and controls.
 
-<img src="https://github.com/user-attachments/assets/8086b22c-31ca-43b5-9656-5882324deeb7" alt="Intro Guide" width="30%" height="30%"/>
+<img src="https://github.com/user-attachments/assets/8086b22c-31ca-43b5-9656-5882324deeb7" alt="Intro Guide" width="30%" />
 
 ---
 
@@ -141,7 +141,7 @@ New users get an in-app walkthrough of the key screens and controls.
 
 Just set up the parameters (IP, protocol, duration) and tap start.
 
-<img src="https://github.com/user-attachments/assets/251567e1-263b-4751-b5b2-d284336cc0c2" alt="Run Test" width="30%" height="30%"/>
+<img src="https://github.com/user-attachments/assets/251567e1-263b-4751-b5b2-d284336cc0c2" alt="Run Test" width="30%"/>
 
 ---
 
@@ -158,7 +158,7 @@ You can:
 - Share or delete from the UI
 - ✨ Analyze with Gemini AI
 
-<img src="https://github.com/user-attachments/assets/9a7efe04-5265-4828-81a0-e15cab9e188a" alt="Result History" width="30%" height="30%"/>
+<img src="https://github.com/user-attachments/assets/9a7efe04-5265-4828-81a0-e15cab9e188a" alt="Result History" width="30%" />
 
 ---
 
