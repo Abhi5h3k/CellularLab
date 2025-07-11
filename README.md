@@ -3,10 +3,14 @@
 [![Abhishek LinkedIn](https://img.shields.io/badge/Abhishek-LinkedIn-blue.svg?style=for-the-badge)](https://www.linkedin.com/in/abhi5h3k/)
 [![Abhishek StackOverflow](https://img.shields.io/badge/Abhishek-StackOverflow-orange.svg?style=for-the-badge)](https://stackoverflow.com/users/6870223/abhi?tab=profile)
 
+📱 Automated Mobile Network Testing Suite for RF Engineers, QA, and Devs
+
 <img src="https://github.com/user-attachments/assets/11b927ce-dd3e-4dcd-952b-500b35af416d" alt="CellularLab" />
 
 
 With JNI bindings to native iPerf3, it offers low-level control, intelligent test strategies, and a polished UI — perfect for field diagnostics, automated lab tests, and performance validation on mobile.
+
+> ⭐️ If you find CellularLab useful, please consider giving it a star — it helps others discover the project and supports development!
 
 ---
 
