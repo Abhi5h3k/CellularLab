@@ -202,7 +202,7 @@ Want to dive deeper into how this app was built or learn how to compile iPerf3 f
 
 - 📖 [How I Accidentally Vibe-Coded an Android iPerf3 App with AI](https://iper3.hashnode.dev/how-i-accidentally-vibe-coded-an-android-iperf3-app-with-ai)
 - 🛠️ [Compiling iPerf3 in Android with CMake and JNI – A Practical Guide](https://iper3.hashnode.dev/compiling-iperf3-in-android-with-cmake-and-jni-a-practical-guide)
-- 📚 [User Guide](https://hashnode.com/docs/6859436f066f78ab9de2e374/guide/68594370633324afd8ade7b0/version/68594370633324afd8ade7b1/page/6859437da45f4ec3f9f8a0c6)
+- 📚 [User Guide](https://android-iperf3.hashnode.space/cellular-lab/v1.0?t=1754656238992)
 
 Follow me on Hashnode for more deep dives:  
 🌐 [@AbhishekIN on Hashnode](https://hashnode.com/@AbhishekIN)
